@@ -54,6 +54,17 @@ python -m src.main check-env         # verifica herramientas, paquetes y claves
 
 ## 2. Uso rápido (prototipo)
 
+**Con clips reales de Pexels** (requiere `PEXELS_API_KEY` en `.env`):
+
+```bash
+python -m src.main check-env      # prueba la clave con una búsqueda real
+python -m src.main demo --source pexels --script data/scripts/twilight/2026-10-04_es_new_beginnings.json
+```
+
+Cada producción incluye `credits.txt` con el autor y la página de Pexels de cada clip.
+
+**Solo con recursos sintéticos:**
+
 ```bash
 # Valida los guiones de muestra y detecta repeticiones
 python -m src.main validate data/scripts/samples/*.json
@@ -161,7 +172,8 @@ Las claves van **solo** en `.env`, que está excluido de git.
 ## 6. Hoja de ruta
 
 - [x] **Fase 1:** estructura, prototipo FFmpeg de extremo a extremo, validación de guiones, detección de similitud, subtítulos, control de calidad, pruebas y 3 temas de muestra en los dos idiomas.
-- [ ] **Fase 2** (necesita claves): cliente de Pexels, proveedor de voz elegido, música con licencia real.
+- [x] **Fase 2a:** cliente de Pexels (API oficial, caché de búsquedas y descargas, filtro de personas, evita repetir clips, créditos).
+- [ ] **Fase 2b:** proveedor de voz elegido y música con licencia real.
 - [ ] **Fase 3:** modo diario con reanudación de tareas (`docs/PROGRAMACION_DIARIA.md`).
 - [ ] **Fase 4** (necesita app aprobada): publicación en TikTok mediante la API oficial (`docs/PUBLICACION_TIKTOK.md`).
 

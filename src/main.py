@@ -46,8 +46,17 @@ def cmd_check_env(settings, _args) -> int:
         except ImportError:
             print(f"{mod:<12}: FALTA (pip install -r requirements.txt)")
     print(f".env        : {'encontrado' if (PROJECT_ROOT / '.env').exists() else 'no existe (copia .env.example)'}")
-    for key in ("PEXELS_API_KEY",):
-        print(f"{key:<12}: {'configurada' if os.environ.get(key) else 'no configurada'}")
+    if os.environ.get("PEXELS_API_KEY"):
+        from .pexels_client import PexelsError, PexelsVideoSource
+        try:
+            source = PexelsVideoSource(settings)
+            source.search("sunset", 1)
+            print(f"Pexels      : clave válida, conexión correcta "
+                  f"(quedan {source.rate_limit.get('X-Ratelimit-Remaining', '?')} solicitudes este mes)")
+        except PexelsError as exc:
+            print(f"Pexels      : clave configurada, pero la prueba falló: {exc}")
+    else:
+        print("Pexels      : PEXELS_API_KEY no configurada")
     print(f"Voz         : proveedor '{settings['voice']['provider']}'")
     return 0
 
@@ -87,12 +96,19 @@ def cmd_validate(settings, args) -> int:
     return status
 
 
+def _clip_source(settings, args, clip_folder: Path):
+    if getattr(args, "source", "local") == "pexels":
+        from .pexels_client import PexelsVideoSource
+        return PexelsVideoSource(settings)
+    from .video_sources import LocalClipSource
+    return LocalClipSource(clip_folder)
+
+
 def _produce(settings, args, clip_folder: Path, music_library: Path | None) -> int:
     from .pipeline import produce
     from .publishing import write_publish_index
-    from .video_sources import LocalClipSource
     require_ffmpeg()
-    result = produce(Path(args.script), settings, LocalClipSource(clip_folder),
+    result = produce(Path(args.script), settings, _clip_source(settings, args, clip_folder),
                      music_library=music_library, music_id=args.music_id, gender=args.voice,
                      srt_override=Path(args.srt) if args.srt else None, force=args.force,
                      allow_similar=args.allow_similar)
@@ -144,6 +160,8 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--srt", help="SRT corregido manualmente para volver a renderizar")
         sp.add_argument("--force", action="store_true", help="Rehace aunque ya exista una versión aprobada")
         sp.add_argument("--allow-similar", action="store_true", help="Permite guiones parecidos a anteriores")
+        sp.add_argument("--source", choices=["local", "pexels"], default="local",
+                        help="Origen de los clips de fondo (pexels requiere PEXELS_API_KEY)")
 
     d = sub.add_parser("demo", help="Prototipo: video completo con recursos sintéticos y voz local")
     production_args(d)

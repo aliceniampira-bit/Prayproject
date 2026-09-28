@@ -158,6 +158,12 @@ def produce(script_path: Path, settings: Settings, clip_source: VideoSource, *,
     (target / "description.txt").write_text(script.tiktok_description.strip() + "\n\n"
                                             + " ".join(script.hashtags) + "\n", encoding="utf-8")
     (target / "hashtags.txt").write_text("\n".join(script.hashtags) + "\n", encoding="utf-8")
+    credits = [f"- {c.title or c.key} — {c.author or 'autor desconocido'} ({c.source_url or c.source}) · {c.license}"
+               for c in clips]
+    if track:
+        credits.append(f"- Música: {track.title} — {track.artist} · {track.license}")
+    (target / "credits.txt").write_text("Créditos de los recursos\n\n" + "\n".join(credits) + "\n",
+                                        encoding="utf-8")
     (target / "provenance.json").write_text(json.dumps(provenance, indent=2, ensure_ascii=False) + "\n",
                                             encoding="utf-8")
     report.video = str(target / "video.mp4")

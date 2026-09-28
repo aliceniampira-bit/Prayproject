@@ -41,7 +41,22 @@
       "uppercase": false,
       "max_chars_per_second": 22,
       "min_cue_seconds": 0.35
-    }
+    },
+    "visual_queries": [
+      "highway sunset drone",
+      "empty road dusk",
+      "car driving sunset road",
+      "wet road after rain",
+      "park street lamp night",
+      "mountain sunset city lights",
+      "orange sky mountains silhouette",
+      "tree silhouette sunset",
+      "wheat field golden hour",
+      "misty forest valley aerial",
+      "dark clouds sunset timelapse",
+      "winding road mountains fog"
+    ],
+    "_visual_notes": "Planos amplios y contemplativos al atardecer o de noche, sin personas identificables; carreteras y caminos como motivo de viaje; cielos naranjas o nublados; movimiento lento (dron, conducción, timelapse)."
   },
   "style": {
     "colors": {
@@ -130,20 +145,5 @@
     "fade_in_seconds": 0.5,
     "fade_out_seconds": 1.2,
     "cue_fade_in_ms": 180
-  },
-  "visual_queries": [
-    "highway sunset drone",
-    "empty road dusk",
-    "car driving sunset road",
-    "wet road after rain",
-    "park street lamp night",
-    "mountain sunset city lights",
-    "orange sky mountains silhouette",
-    "tree silhouette sunset",
-    "wheat field golden hour",
-    "misty forest valley aerial",
-    "dark clouds sunset timelapse",
-    "winding road mountains fog"
-  ],
-  "_visual_notes": "Planos amplios y contemplativos al atardecer o de noche, sin personas identificables; carreteras y caminos como motivo de viaje; cielos naranjas o nublados; movimiento lento (dron, conducción, timelapse)."
+  }
 }

@@ -100,5 +100,16 @@
     "media_registry": "data/media_registry.json",
     "fonts_dir": "assets/fonts",
     "branding_dir": "assets/branding"
+  },
+  "pexels": {
+    "per_page": 15,
+    "min_duration": 6,
+    "max_duration": 60,
+    "min_width_portrait": 1080,
+    "min_height_landscape": 1080,
+    "repeat_cooldown_days": 45,
+    "search_cache_days": 7,
+    "max_retries": 3,
+    "timeout": 30
   }
 }
