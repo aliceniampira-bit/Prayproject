@@ -23,6 +23,7 @@ def test_prototype_render(tmp_path, sample_paths):
         "video": {"min_duration_seconds": 5, "max_duration_seconds": 60, "preset": "ultrafast",
                   "clips_per_video": 2},
         "script": {"history_dirs": []},
+        "voice": {"provider": "espeak_local"},  # offline: never calls a paid voice API
         "paths": {"output_dir": str(tmp_path / "out"), "errors_dir": str(tmp_path / "out" / "errors"),
                   "work_dir": str(tmp_path / "work"), "media_registry": str(tmp_path / "registry.json")},
     })

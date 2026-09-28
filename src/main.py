@@ -57,7 +57,15 @@ def cmd_check_env(settings, _args) -> int:
             print(f"Pexels      : clave configurada, pero la prueba falló: {exc}")
     else:
         print("Pexels      : PEXELS_API_KEY no configurada")
-    print(f"Voz         : proveedor '{settings['voice']['provider']}'")
+    provider = settings["voice"]["provider"]
+    print(f"Voz         : proveedor '{provider}'")
+    if provider == "minimax":
+        from .voice_generator import MiniMaxProvider, VoiceError
+        try:
+            MiniMaxProvider(settings["voice"]["voices"].get("minimax", {})).check_auth()
+            print("MiniMax     : autenticación correcta")
+        except VoiceError as exc:
+            print(f"MiniMax     : la prueba falló: {exc}")
     return 0
 
 

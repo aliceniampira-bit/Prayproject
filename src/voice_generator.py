@@ -11,12 +11,16 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 import shutil
 import subprocess
+import time
 import wave
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
+
+import requests
 
 from .config import Settings
 from .ffmpeg_utils import duration_of, run_ffmpeg
@@ -27,6 +31,14 @@ log = logging.getLogger(__name__)
 
 class VoiceError(RuntimeError):
     pass
+
+
+class VoiceAuthError(VoiceError):
+    """The provider rejected the credential (or none reached it)."""
+
+
+class VoiceRateLimitError(VoiceError):
+    """The provider's rate limit, quota or balance was exhausted."""
 
 
 class VoiceProvider:
@@ -87,15 +99,156 @@ class EspeakProvider(VoiceProvider):
         return out_path
 
 
-PROVIDERS = {"espeak_local": EspeakProvider}
+class MiniMaxProvider(VoiceProvider):
+    """MiniMax text-to-speech (https://platform.minimax.io), endpoint ``/v1/t2a_v2``.
+
+    Credentials: in Claude Code cloud sessions the egress proxy adds the
+    ``Authorization: Bearer ...`` header for ``api.minimax.io``, so no key is
+    needed in the environment or in any file. Only when running elsewhere is
+    ``MINIMAX_API_KEY`` read from the environment (.env). The key and the header
+    are never logged or included in error messages.
+    """
+
+    name = "minimax"
+    license_note = ("MiniMax AI voice. Confirm that your MiniMax plan allows commercial use and set "
+                    "voice.voices.minimax.commercial_use_confirmed=true.")
+
+    # base_resp.status_code values documented by MiniMax.
+    AUTH_CODES = {1004, 2049}
+    RATE_CODES = {1002, 1039, 1041}       # per-minute limits: worth waiting and retrying
+    QUOTA_CODES = {1008, 2056}            # balance or plan quota: retrying does not help
+    TRANSIENT_CODES = {1000, 1001, 1013}  # unknown / timeout / internal error
+    CONTENT_CODES = {1026, 1027, 1042}    # sensitive or invalid input text
+
+    def __init__(self, config: dict[str, Any], session: requests.Session | None = None,
+                 api_key: str | None = None):
+        self.config = config
+        self.session = session or requests.Session()
+        self.base_url = config.get("base_url", "https://api.minimax.io").rstrip("/")
+        self.model = config.get("model", "speech-02-hd")
+        self.audio_format = config.get("format", "mp3")
+        self.timeout = int(config.get("timeout", 60))
+        self.max_retries = max(1, int(config.get("max_retries", 3)))
+        self.commercial_use_cleared = bool(config.get("commercial_use_confirmed", False))
+        # Optional: outside Claude Code the key may come from the environment.
+        self._api_key = api_key if api_key is not None else os.environ.get("MINIMAX_API_KEY", "").strip()
+
+    def voice_id(self, language: str, gender: str) -> str:
+        per_language = self.config.get(language)
+        voice = per_language.get(gender) if isinstance(per_language, dict) else None
+        voice = voice or self.config.get("voice_id")
+        if not voice:
+            raise VoiceError(f"No MiniMax voice_id configured for {language}/{gender} "
+                             "(voice.voices.minimax.voice_id in config/settings.json).")
+        return voice
+
+    def cache_key_extra(self) -> str:
+        c = self.config
+        return f"{self.model}:{c.get('speed', 1.0)}:{c.get('vol', 1.0)}:{c.get('pitch', 0)}:{c.get('emotion', '')}"
+
+    def _headers(self) -> dict[str, str]:
+        headers = {"Content-Type": "application/json"}
+        if self._api_key:
+            headers["Authorization"] = f"Bearer {self._api_key}"
+        return headers
+
+    def _auth_error(self, detail: str) -> VoiceAuthError:
+        source = ("MINIMAX_API_KEY from the environment" if self._api_key
+                  else "the credential for api.minimax.io stored in the Claude environment (API credentials)")
+        return VoiceAuthError(
+            f"MiniMax rejected the authentication ({detail}). Check {source}: header 'Authorization', "
+            "prefix 'Bearer', valid key. A credential saved after the session started only applies to a new session.")
+
+    def _post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
+        url = f"{self.base_url}{path}"
+        last_error = "no response"
+        for attempt in range(self.max_retries):
+            if attempt:
+                time.sleep(2 ** attempt)
+            try:
+                resp = self.session.post(url, json=payload, headers=self._headers(), timeout=self.timeout)
+            except requests.RequestException as exc:
+                last_error = f"network error: {type(exc).__name__}"
+                continue
+            if resp.status_code in (401, 403):
+                raise self._auth_error(f"HTTP {resp.status_code}")
+            if resp.status_code == 429:
+                last_error = "HTTP 429"
+                if attempt + 1 == self.max_retries:
+                    raise VoiceRateLimitError("MiniMax rate limit reached (HTTP 429). Wait and try again.")
+                continue
+            if resp.status_code >= 500:
+                last_error = f"HTTP {resp.status_code}"
+                continue
+            if resp.status_code != 200:
+                raise VoiceError(f"MiniMax request failed: HTTP {resp.status_code}")
+            try:
+                data = resp.json()
+            except ValueError:
+                raise VoiceError("MiniMax returned a response that is not JSON.") from None
+            base = data.get("base_resp") or {}
+            code = int(base.get("status_code", 0) or 0)
+            msg = str(base.get("status_msg", ""))[:200]
+            if code == 0:
+                return data
+            if code in self.AUTH_CODES:
+                raise self._auth_error(f"code {code}: {msg}")
+            if code in self.QUOTA_CODES:
+                raise VoiceRateLimitError(f"MiniMax usage limit or balance exhausted (code {code}: {msg}). "
+                                          "Check your plan and balance on platform.minimax.io.")
+            if code in self.RATE_CODES:
+                last_error = f"code {code}: {msg}"
+                if attempt + 1 == self.max_retries:
+                    raise VoiceRateLimitError(f"MiniMax rate limit reached ({last_error}). Wait and try again.")
+                continue
+            if code in self.TRANSIENT_CODES:
+                last_error = f"code {code}: {msg}"
+                continue
+            if code in self.CONTENT_CODES:
+                raise VoiceError(f"MiniMax refused the text (code {code}: {msg}). Review the sentence.")
+            raise VoiceError(f"MiniMax generation failed (code {code}: {msg}).")
+        raise VoiceError(f"MiniMax request failed after {self.max_retries} attempts ({last_error}).")
+
+    def check_auth(self) -> None:
+        """Cheap authenticated call (lists voices); raises VoiceAuthError if rejected."""
+        self._post("/v1/get_voice", {"voice_type": "system"})
+
+    def synthesize(self, text: str, language: str, gender: str, out_path: Path) -> Path:
+        c = self.config
+        voice_setting: dict[str, Any] = {"voice_id": self.voice_id(language, gender),
+                                         "speed": c.get("speed", 1.0), "vol": c.get("vol", 1.0),
+                                         "pitch": c.get("pitch", 0)}
+        if c.get("emotion"):
+            voice_setting["emotion"] = c["emotion"]
+        payload: dict[str, Any] = {
+            "model": self.model, "text": text, "stream": False, "voice_setting": voice_setting,
+            "audio_setting": {"sample_rate": int(c.get("sample_rate", 44100)), "bitrate": 128000,
+                              "format": self.audio_format, "channel": 1},
+        }
+        boost = (c.get("language_boost") or {}).get(language)
+        if boost:
+            payload["language_boost"] = boost
+        data = self._post("/v1/t2a_v2", payload)
+        audio_hex = (data.get("data") or {}).get("audio")
+        if not audio_hex:
+            raise VoiceError("MiniMax returned no audio for: %r" % text[:80])
+        try:
+            audio = bytes.fromhex(audio_hex)
+        except ValueError:
+            raise VoiceError("MiniMax returned audio that could not be decoded.") from None
+        path = out_path.with_suffix(f".{self.audio_format}")
+        path.write_bytes(audio)
+        return path
+
+
+PROVIDERS: dict[str, type[VoiceProvider]] = {"espeak_local": EspeakProvider, "minimax": MiniMaxProvider}
 
 
 def get_provider(settings: Settings) -> VoiceProvider:
     name = settings["voice"]["provider"]
     if name not in PROVIDERS:
         raise VoiceError(
-            f"Voice provider '{name}' is not implemented yet. Available: {', '.join(PROVIDERS)}. "
-            "Commercial providers are added once one is chosen (see README, 'Decisiones')."
+            f"Voice provider '{name}' is not implemented. Available: {', '.join(PROVIDERS)}."
         )
     return PROVIDERS[name](settings["voice"]["voices"].get(name, {}))
 
@@ -169,8 +322,7 @@ def generate_narration(script: PrayerScript, settings: Settings, out_dir: Path,
             ).hexdigest()[:24]
             cached = cache_dir / f"{key}.wav"
             if not cached.exists():
-                raw = out_dir / f"raw_{key}.wav"
-                provider.synthesize(sentence, script.language, gender, raw)
+                raw = provider.synthesize(sentence, script.language, gender, out_dir / f"raw_{key}.wav")
                 _normalize_segment(raw, cached, sr)
                 raw.unlink(missing_ok=True)
             with wave.open(str(cached), "rb") as wf:

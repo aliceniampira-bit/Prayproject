@@ -32,7 +32,7 @@
     "audio_bitrate": "192k"
   },
   "voice": {
-    "provider": "espeak_local",
+    "provider": "minimax",
     "selected_gender": {
       "en": "female",
       "es": "female"
@@ -49,6 +49,23 @@
         },
         "speed_wpm": 125,
         "pitch": 45
+      },
+      "minimax": {
+        "base_url": "https://api.minimax.io",
+        "model": "speech-02-hd",
+        "voice_id": "ttv-voice-2026092905102826-HBzIH9pi",
+        "language_boost": {
+          "en": "English",
+          "es": "Spanish"
+        },
+        "speed": 1.0,
+        "vol": 1.0,
+        "pitch": 0,
+        "format": "mp3",
+        "sample_rate": 44100,
+        "timeout": 60,
+        "max_retries": 3,
+        "commercial_use_confirmed": false
       }
     },
     "sample_rate": 48000,

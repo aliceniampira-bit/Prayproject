@@ -20,7 +20,7 @@ python -m src.main demo --script data/scripts/twilight/2026-10-04_es_new_beginni
 |---|---|---|
 | Python | 3.11 (compatible con 3.10 a 3.13) | Todo el sistema |
 | FFmpeg + ffprobe | 6.1 (sirve cualquier versión 5.x o superior compilada con `libass` y `libx264`) | Edición, mezcla y análisis |
-| espeak-ng | 1.51 | **Solo** para la voz de prueba del prototipo |
+| espeak-ng | 1.51 | **Solo** para la voz de prueba (`espeak_local`) y las pruebas automáticas |
 | Paquetes pip | ver `requirements.txt` | python-dotenv, requests, Pillow, pytest |
 
 ### Instalación
@@ -124,7 +124,7 @@ src/
   main.py            CLI
   pipeline.py        orquesta una producción (fecha + idioma)
   script_generator.py  modelo de guion, validación, similitud, proveedores
-  voice_generator.py   proveedores de voz + ensamblado frase a frase
+  voice_generator.py   proveedores de voz (MiniMax, espeak local) + ensamblado frase a frase
   subtitle_generator.py  cortes de línea, SRT y ASS
   video_editor.py      filtros FFmpeg: clips, transiciones, texto, mezcla
   music_manager.py     biblioteca con licencias y "cama" musical
@@ -151,16 +151,43 @@ Cada producción contiene: `video.mp4`, `script.json`, `subtitles.srt`, `descrip
 | Credencial | Dónde conseguirla | Coste | Cuándo |
 |---|---|---|---|
 | `PEXELS_API_KEY` | https://www.pexels.com/api/ (cuenta gratuita) | Gratis | Fase 2 |
-| Clave del proveedor de voz | Según el proveedor que elijas (ver abajo) | De pago por uso o suscripción | Fase 2 |
+| Credencial de MiniMax (voz) | https://platform.minimax.io | De pago por uso o suscripción | Fase 2b (activa) |
 | Música con licencia | Biblioteca de música con licencia comercial para redes sociales | Normalmente suscripción | Antes de publicar |
 | `ANTHROPIC_API_KEY` (opcional) | https://console.anthropic.com | De pago por uso | Solo si automatizas la escritura de guiones |
 | App de TikTok for Developers | https://developers.tiktok.com | Gratis, requiere aprobación y auditoría | Fase posterior |
 
-Las claves van **solo** en `.env`, que está excluido de git.
+Las claves van **solo** en `.env`, que está excluido de git, o en las credenciales del entorno de Claude (ver abajo). Nunca en el código ni en `config/`.
+
+### Voz con MiniMax
+
+El proveedor de voz activo es **MiniMax** (`voice.provider: "minimax"` en `config/settings.json`), con el modelo `speech-02-hd` y tu voz `voice.voices.minimax.voice_id`. Los ajustes (`speed`, `vol`, `pitch`, `language_boost`, `sample_rate`, reintentos) están en `voice.voices.minimax`.
+
+**Dónde va la credencial**
+
+- **En Claude Code (sesiones en la nube):** guarda la clave en Claude, en el entorno de la sesión → *Edit* → *API credentials*, para el host `api.minimax.io`, cabecera `Authorization` y prefijo `Bearer`. El proxy de la sesión añade la cabecera a cada petición, así que **no** hace falta `MINIMAX_API_KEY` ni ningún archivo con la clave. **La credencial solo llega a las sesiones iniciadas después de guardarla:** si la añades o la cambias, abre una sesión nueva.
+- **En tu ordenador:** pon `MINIMAX_API_KEY=...` en `.env`. Si la variable existe, el programa la envía como `Authorization: Bearer ...`.
+
+La clave y la cabecera nunca se escriben en logs, mensajes de error ni archivos del proyecto.
+
+**Comprobarla:** `python -m src.main check-env` hace una llamada autenticada barata y muestra `MiniMax : autenticación correcta` o el motivo del fallo.
+
+**Errores que verás**
+
+| Mensaje | Causa | Qué hacer |
+|---|---|---|
+| `MiniMax rejected the authentication (code 1004 / 2049 / HTTP 401)` | No llegó la clave o no es válida | Revisa la credencial en *API credentials* (host, cabecera, prefijo `Bearer`) o `MINIMAX_API_KEY`, y abre una sesión nueva |
+| `MiniMax rate limit reached` | Límite por minuto (1002, 1039, 1041, HTTP 429), tras varios reintentos con espera | Espera un poco y repite: las frases ya generadas están en caché |
+| `MiniMax usage limit or balance exhausted` | Sin saldo o cuota del plan agotada (1008, 2056); no se reintenta | Revisa el plan y el saldo en platform.minimax.io |
+| `MiniMax refused the text` | Texto marcado como sensible o inválido (1026, 1027, 1042) | Revisa la frase indicada |
+| `MiniMax generation failed` / `after N attempts` | Otro error o fallo del servidor | Repite más tarde; si persiste, revisa el código indicado |
+
+**Cambiar de proveedor:** pon `"provider": "espeak_local"` en `config/settings.json` para volver a la voz local de prueba (sin coste ni red). Las pruebas automáticas usan siempre la voz local; la única que llama a MiniMax de verdad es opcional: `MINIMAX_LIVE_TEST=1 python -m pytest tests/test_voice_minimax.py -k live` (gasta unos pocos créditos).
+
+**Publicación:** mientras `commercial_use_confirmed` sea `false`, el control de calidad marca la voz como pendiente y bloquea la publicación. Cámbialo a `true` solo después de confirmar que tu plan de MiniMax permite el uso comercial del audio.
 
 ## 5. Decisiones que debes tomar
 
-1. **Proveedor de voz IA.** Opciones con voces naturales en inglés y español y términos comerciales: ElevenLabs, Azure AI Speech, Google Cloud Text-to-Speech y Amazon Polly. Compara la calidad de las voces en español (¿latino, neutro o de España?), los términos de uso comercial y el precio en su web oficial (ver `docs/COSTOS_Y_ESCALABILIDAD.md`). Mi recomendación: prueba **ElevenLabs** (voces más expresivas) y **Azure** (muy buena relación calidad/precio, voces es-MX/es-US) con uno de los guiones de muestra antes de decidir.
+1. **Proveedor de voz IA.** *Decidido: MiniMax (ver sección 4).* Alternativas evaluadas: Opciones con voces naturales en inglés y español y términos comerciales: ElevenLabs, Azure AI Speech, Google Cloud Text-to-Speech y Amazon Polly. Compara la calidad de las voces en español (¿latino, neutro o de España?), los términos de uso comercial y el precio en su web oficial (ver `docs/COSTOS_Y_ESCALABILIDAD.md`). Mi recomendación: prueba **ElevenLabs** (voces más expresivas) y **Azure** (muy buena relación calidad/precio, voces es-MX/es-US) con uno de los guiones de muestra antes de decidir.
 2. **Variante de español:** latinoamericana neutra (recomendado para TikTok) o de España.
 3. **Cómo se escriben los guiones:**
    - A (recomendado al principio): lotes semanales o mensuales redactados en una sesión de Claude Code, revisados por ti y guardados en una cola. Sin coste de API y con revisión humana.
@@ -173,7 +200,8 @@ Las claves van **solo** en `.env`, que está excluido de git.
 
 - [x] **Fase 1:** estructura, prototipo FFmpeg de extremo a extremo, validación de guiones, detección de similitud, subtítulos, control de calidad, pruebas y 3 temas de muestra en los dos idiomas.
 - [x] **Fase 2a:** cliente de Pexels (API oficial, caché de búsquedas y descargas, filtro de personas, evita repetir clips, créditos).
-- [ ] **Fase 2b:** proveedor de voz elegido y música con licencia real.
+- [x] **Fase 2b (voz):** MiniMax `speech-02-hd` con voz propia.
+- [ ] **Fase 2b (música):** música con licencia real.
 - [ ] **Fase 3:** modo diario con reanudación de tareas (`docs/PROGRAMACION_DIARIA.md`).
 - [ ] **Fase 4** (necesita app aprobada): publicación en TikTok mediante la API oficial (`docs/PUBLICACION_TIKTOK.md`).
 
