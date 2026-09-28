@@ -1,6 +1,7 @@
 {
   "date": "2026-10-03",
   "language": "es",
+  "type": "full",
   "theme": "inner_peace",
   "title": "Calma mi corazón",
   "hook": "Si tu mente no ha descansado en todo el día, regálate este momento de calma.",
@@ -22,7 +23,7 @@
     "No puedo controlarlo todo, y nunca fue esa mi tarea. Por eso pongo este día, con todo lo que quedó pendiente, en tus manos. Amén."
   ],
   "closing": "Quédate aquí un instante más. Respira despacio y deja que su paz te envuelva.",
-  "tiktok_description": "Una oración breve para una mente inquieta. Suelta tus preocupaciones por un momento. 🕊️",
+  "description": "Una oración breve para una mente inquieta. Suelta tus preocupaciones por un momento. 🕊️",
   "hashtags": [
     "#oracion",
     "#oraciondiaria",

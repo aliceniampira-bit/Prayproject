@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-07",
+  "language": "en",
+  "type": "full",
+  "theme": "faith",
+  "title": "Faith for the Unseen Road",
+  "hook": "Some prayers are answered with a map. Most are answered with a next step.",
+  "bible_verse": {
+    "reference": "Hebrews 11:1",
+    "translation": "KJV",
+    "text": "Now faith is the substance of things hoped for, the evidence of things not seen.",
+    "spoken_intro": "Scripture puts it this way:",
+    "verification": {
+      "status": "pending",
+      "verified_by": null,
+      "source": null,
+      "note": "Quoted from memory (KJV, public domain in the US). Check it against a reliable KJV edition before setting status to 'verified'."
+    }
+  },
+  "prayer": [
+    "Father, I come to you with questions I cannot answer on my own. I want to see the whole road before I walk it, but you ask me to trust you one step at a time.",
+    "Teach me a faith that does not depend on how I feel. When the waiting is long, help me remember every time you were faithful before.",
+    "Give me courage to do the small, right thing in front of me, even when I cannot see where it leads. I believe you are good, and you are near. In Jesus' name, amen."
+  ],
+  "closing": "What step of faith is God asking you to take today? Write it down, and take it.",
+  "description": "A prayer for faith when you cannot see what comes next. 🙏 Share it with someone who is waiting on God.",
+  "hashtags": ["#prayer", "#faith", "#dailyprayer", "#trustgod", "#christian", "#jesus"],
+  "platform_overrides": {
+    "youtube_shorts": {"title": "A Prayer for Faith When You Can't See the Way"}
+  },
+  "review": {"status": "pending"},
+  "generator": "claude-code (curated sample, full)"
+}

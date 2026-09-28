@@ -1,6 +1,7 @@
 {
   "date": "2026-10-06",
   "language": "es",
+  "type": "full",
   "theme": "trust_in_god",
   "title": "Aunque no entienda",
   "hook": "Dios fiel, hoy hay cosas que no entiendo, pero decido confiar en ti.",
@@ -11,7 +12,7 @@
     "Mi futuro está seguro en tus manos."
   ],
   "closing": "En el nombre de Jesús, amén.",
-  "tiktok_description": "Para cuando la vida todavía no tiene sentido. 🕊️ Sigue confiando.",
+  "description": "Para cuando la vida todavía no tiene sentido. 🕊️ Sigue confiando.",
   "hashtags": [
     "#confiaenDios",
     "#oraciondiaria",

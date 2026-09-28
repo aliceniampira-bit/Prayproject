@@ -1,6 +1,7 @@
 {
   "date": "2026-10-05",
   "language": "en",
+  "type": "full",
   "theme": "family_protection",
   "title": "Cover My Home",
   "hook": "Father, tonight I'm bringing my family to you, one name at a time.",
@@ -11,7 +12,7 @@
     "Teach us to love patiently and to forgive quickly. Make our home a place where your name is spoken with gratitude."
   ],
   "closing": "In Jesus' name, amen.",
-  "tiktok_description": "A prayer to cover your family tonight. 🏡 Tag someone you're praying for.",
+  "description": "A prayer to cover your family tonight. 🏡 Tag someone you're praying for.",
   "hashtags": [
     "#familyprayer",
     "#dailyprayer",

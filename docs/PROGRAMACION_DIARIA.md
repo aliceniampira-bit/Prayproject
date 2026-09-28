@@ -2,17 +2,18 @@
 
 El modo diario se activará cuando el generador funcione de forma estable con voz, clips y música reales. Ya están resueltas estas piezas:
 
-- **Idempotencia:** si `output/<idioma>/<fecha>/qc_report.json` está aprobado, esa producción se omite.
+- **Comando diario:** `python -m src.main day [--date AAAA-MM-DD] --source pexels` produce todos los guiones de la cola (`data/scripts/queue/`) para esa fecha, en los dos idiomas y para las tres redes. Si un video falla, sigue con los demás y lo resume al final.
+- **Idempotencia:** si el maestro de un tema está aprobado y existen sus versiones por red, esa producción se omite.
 - **Reanudación barata:** la voz se cachea por frase, así que al repetir una tarea fallida solo se rehace lo que falta.
 - **Registro:** `logs/studio.log`.
 
-Pendiente de implementar: el comando `python -m src.main daily [--date AAAA-MM-DD]`, que tomará el guion de la cola para la fecha, producirá los dos idiomas, reintentará lo fallido y escribirá un resumen.
+Pendiente: reintentos automáticos y un aviso cuando algo falle.
 
 ## Windows: Programador de tareas (borrador)
 
 ```powershell
 schtasks /Create /TN "DailyPrayerStudio" /SC DAILY /ST 05:30 ^
-  /TR "\"C:\ruta\daily-prayer-studio\.venv\Scripts\python.exe\" -m src.main daily" ^
+  /TR "\"C:\ruta\daily-prayer-studio\.venv\Scripts\python.exe\" -m src.main day --source pexels" ^
   /RL LIMITED
 ```
 
@@ -21,7 +22,7 @@ En las propiedades de la tarea, fija "Iniciar en" con la carpeta del proyecto y 
 ## macOS / Linux: cron (borrador)
 
 ```cron
-30 5 * * * cd /ruta/daily-prayer-studio && .venv/bin/python -m src.main daily >> logs/cron.log 2>&1
+30 5 * * * cd /ruta/daily-prayer-studio && .venv/bin/python -m src.main day --source pexels >> logs/cron.log 2>&1
 ```
 
 No se presupone que Claude Code siga ejecutándose en segundo plano: la tarea programada llama directamente a Python.

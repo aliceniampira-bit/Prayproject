@@ -1,6 +1,7 @@
 {
   "date": "2026-10-05",
   "language": "es",
+  "type": "full",
   "theme": "family_protection",
   "title": "Cuida mi casa",
   "hook": "Padre bueno, esta noche te presento a mi familia, uno por uno.",
@@ -11,7 +12,7 @@
     "Enséñanos a amarnos con paciencia y a perdonarnos pronto. Que nuestro hogar sea un lugar donde se hable de ti con gratitud."
   ],
   "closing": "Te lo pido en el nombre de Jesús, amén.",
-  "tiktok_description": "Una oración para cubrir a tu familia esta noche. 🏡 Etiqueta a alguien por quien estás orando.",
+  "description": "Una oración para cubrir a tu familia esta noche. 🏡 Etiqueta a alguien por quien estás orando.",
   "hashtags": [
     "#oracionporlafamilia",
     "#oraciondiaria",

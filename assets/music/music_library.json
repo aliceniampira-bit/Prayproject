@@ -1,5 +1,5 @@
 {
-  "_comment": "Registra aquí cada pista con licencia. Copia el archivo de audio a esta carpeta. Pon commercial_use_verified y tiktok_use_verified en true SOLO después de leer la licencia y comprobar que permite uso comercial en TikTok.",
+  "_comment": "Registra aquí cada pista con licencia y copia el archivo de audio a esta carpeta. Marca commercial_use_verified y cada red de platforms_verified en true SOLO después de leer la licencia y comprobar que permite uso comercial en esa red. content_id_registered: true si la pista está registrada en Content ID de YouTube (puede generar reclamaciones). attribution: texto de crédito si la licencia lo exige (se añade a las descripciones).",
   "tracks": [
     {
       "_example": true,
@@ -12,7 +12,9 @@
       "license_url": "https://…/licencia",
       "instrumental": true,
       "commercial_use_verified": false,
-      "tiktok_use_verified": false,
+      "platforms_verified": {"tiktok": false, "instagram_reels": false, "youtube_shorts": false},
+      "content_id_registered": null,
+      "attribution": "",
       "restrictions": "Ej.: requiere atribución en la descripción; no permite Content ID; etc.",
       "verified_by": null,
       "verified_on": null

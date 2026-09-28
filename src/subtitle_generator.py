@@ -244,14 +244,43 @@ class TitleCards:
     total: float
     show_closing: bool = True
     brand: str | None = None
+    eyebrow: str | None = None
+    show_handle: bool = True
 
     @property
     def show_title(self) -> bool:
         return self.title_seconds > 0 and bool(self.title)
 
 
+def _ornament(cx: int, y: int, settings: Settings) -> str | None:
+    """A thin accent rule (ASS vector drawing), part of the account's visual signature."""
+    orn = settings.style.get("ornament") or {}
+    if not orn.get("enabled"):
+        return None
+    w, h = int(orn.get("width", 180)), int(orn.get("height", 3))
+    color = ass_color(settings.style["colors"]["accent"])[4:]  # override tags take &HBBGGRR&
+    return (f"{{\\an5\\pos({cx},{y})\\bord0\\shad0\\blur0.6\\1c&H{color}&\\p1}}"
+            f"m 0 0 l {w} 0 l {w} {h} l 0 {h}{{\\p0}}")
+
+
+def _title_block(ev: Callable[..., None], start: float, end: float, lines: list[str], eyebrow: str | None,
+                 cx: int, center_y: int, settings: Settings, fade: str) -> None:
+    """Eyebrow label, title lines and ornament, vertically centred on ``center_y``."""
+    st = settings.style
+    size = st["sizes"]["title"]
+    half = int(len(lines) * size * 1.02 / 2)
+    ev(start, end, "Title", f"{{{fade}\\pos({cx},{center_y})}}" + "\\N".join(_ass_escape(x) for x in lines))
+    gap = int((st.get("ornament") or {}).get("gap", 60))
+    if eyebrow:
+        ev(start, end, "Eyebrow", f"{{{fade}\\pos({cx},{center_y - half - gap})}}{_ass_escape(eyebrow)}")
+    rule = _ornament(cx, center_y + half + gap - 20, settings)
+    if rule:
+        ev(start + 0.25, end, "Rule", "{" + fade + "}" + rule)
+
+
 def write_ass(cues: list[Cue], cards: TitleCards, fonts: dict[str, ResolvedFont],
-              settings: Settings, path: Path) -> Path:
+              settings: Settings, path: Path, title_center_y: int | None = None,
+              title_fade: str = "\\fad(500,600)") -> Path:
     st = settings.style
     W, H = settings["video"]["width"], settings["video"]["height"]
     c, sz, safe, lay = st["colors"], st["sizes"], st["safe_zone"], st["layout"]
@@ -270,6 +299,8 @@ def write_ass(cues: list[Cue], cards: TitleCards, fonts: dict[str, ResolvedFont]
 
     sub_margin = lay["subtitle_bottom_margin"]
     brand_font = fonts.get("brand", fonts["body"])
+    blur = st.get("text_blur", 0)
+    blur_tag = f"\\blur{blur}" if blur else ""
     styles = [
         style("Sub", fonts["body"], sz["subtitle"], c["text"], 2, sub_margin, space=spacing),
         style("Verse", fonts["verse"], sz["verse"], c["verse_text"], 2, sub_margin, italic=True, space=spacing),
@@ -278,6 +309,8 @@ def write_ass(cues: list[Cue], cards: TitleCards, fonts: dict[str, ResolvedFont]
         style("Name", fonts["title"], sz["closing_name"], c["accent"], 5, 0),
         style("Tagline", fonts["body"], sz["closing_tagline"], c["text"], 5, 0),
         style("Brand", brand_font, sz.get("brand", 34), c["accent"], 5, 0, space=1),
+        style("Eyebrow", brand_font, sz.get("eyebrow", 34), c["accent"], 5, 0, space=4),
+        style("Rule", brand_font, 10, c["accent"], 5, 0),
     ]
     header = [
         "[Script Info]", "ScriptType: v4.00+", f"PlayResX: {W}", f"PlayResY: {H}",
@@ -292,13 +325,27 @@ def write_ass(cues: list[Cue], cards: TitleCards, fonts: dict[str, ResolvedFont]
     cx = safe["left"] + (W - safe["left"] - safe["right"]) // 2
     events = []
 
-    def ev(start: float, end: float, style_name: str, text: str, layer: int = 0) -> None:
+    halo = st.get("text_halo") or {}
+
+    def ev(start: float, end: float, style_name: str, text: str, layer: int = 1) -> None:
+        if style_name == "Rule":
+            events.append(f"Dialogue: {layer},{_ass_time(start)},{_ass_time(end)},{style_name},,0,0,0,,{text}")
+            return
+        if halo.get("enabled"):
+            # Soft dark glow under the text: keeps it legible over bright skies without a box.
+            size = halo.get("size", 14)
+            alpha = int(round((1 - halo.get("opacity", 0.45)) * 255))
+            glow = (f"{{\\1a&HFF&\\3c&H{ass_color(c['shadow'])[4:]}&\\3a&H{alpha:02X}&"
+                    f"\\bord{size}\\blur{size}\\shad0}}")
+            events.append(f"Dialogue: 0,{_ass_time(start)},{_ass_time(end)},{style_name},,0,0,0,,{glow}{text}")
+        if blur_tag:
+            text = "{" + blur_tag + "}" + text
         events.append(f"Dialogue: {layer},{_ass_time(start)},{_ass_time(end)},{style_name},,0,0,0,,{text}")
 
     if cards.show_title:
         title_end = min(cards.title_seconds, cards.outro_start)
-        ev(0.2, title_end, "Title", f"{{\\fad(500,600)\\pos({cx},{lay['title_center_y']})}}"
-           + "\\N".join(_ass_escape(line) for line in cards.title))
+        _title_block(ev, 0.2 if title_fade else 0.0, title_end, cards.title, cards.eyebrow, cx,
+                     title_center_y or lay["title_center_y"], settings, title_fade)
 
     words_y = lay.get("words_center_y", 960)
     placement = f"\\pos({cx},{words_y})\\an5" if word_mode else ""
@@ -313,7 +360,7 @@ def write_ass(cues: list[Cue], cards: TitleCards, fonts: dict[str, ResolvedFont]
         if word_mode:
             ref_y = words_y + sz["verse"] + 40
         else:
-            ref_y = H - sub_margin - sz["verse"] * 1.25 * settings["subtitles"]["max_lines"] - 24
+            ref_y = H - sub_margin - sz["verse"] * 1.25 * settings["subtitles"]["max_lines"] - 44
         ev(verse_cues[0].start, verse_cues[-1].end, "Ref",
            f"{{\\fad(250,250)\\an5\\pos({cx},{int(ref_y)})}}— {_ass_escape(verse_cues[0].reference or '')}")
 
@@ -323,17 +370,33 @@ def write_ass(cues: list[Cue], cards: TitleCards, fonts: dict[str, ResolvedFont]
 
     if cards.show_closing:
         y = lay["closing_center_y"]
+        rule = _ornament(cx, y + sz["closing_name"] // 2 + 30, settings)
+        tagline_y = y + sz["closing_name"] + (60 if rule else 30)
         ev(cards.outro_start, cards.total, "Name",
-           f"{{\\fad(600,0)\\pos({W // 2},{y})}}{_ass_escape(cards.account_name)}")
+           f"{{\\fad(600,0)\\pos({cx},{y})}}{_ass_escape(cards.account_name)}")
+        if rule:
+            ev(cards.outro_start + 0.2, cards.total, "Rule", "{\\fad(600,0)}" + rule)
         ev(cards.outro_start + 0.3, cards.total, "Tagline",
-           f"{{\\fad(600,0)\\pos({W // 2},{y + sz['closing_name'] + 30})}}{_ass_escape(cards.tagline)}")
-        if cards.handle:
+           f"{{\\fad(600,0)\\pos({cx},{tagline_y})}}{_ass_escape(cards.tagline)}")
+        if cards.handle and cards.show_handle:
             ev(cards.outro_start + 0.5, cards.total, "Tagline",
-               f"{{\\fad(600,0)\\pos({W // 2},{y + sz['closing_name'] + sz['closing_tagline'] + 60})}}"
+               f"{{\\fad(600,0)\\pos({cx},{tagline_y + sz['closing_tagline'] + 30})}}"
                f"{_ass_escape(cards.handle)}")
 
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(header + events) + "\n", encoding="utf-8")
     return path
+
+
+def write_cover_ass(title_lines: list[str], eyebrow: str | None, brand: str | None,
+                    fonts: dict[str, ResolvedFont], settings: Settings, path: Path) -> Path:
+    """Static title card for the cover image (same look as the opening title of the video)."""
+    cover = settings.style.get("cover", {})
+    cards = TitleCards(title_lines, "", "", "", 10.0, 10.0, 10.0, show_closing=False, brand=brand,
+                       eyebrow=eyebrow)
+    return write_ass([], cards, fonts, settings, path,
+                     title_center_y=cover.get("title_center_y", settings.style["layout"]["title_center_y"]),
+                     title_fade="")
 
 
 # ---- word-group captions (short centred phrases synced to the voice) ---------

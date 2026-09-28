@@ -130,3 +130,23 @@ def test_select_downloads_and_records_provenance(source, tmp_path):
     clip = clips[0]
     assert clip.author == "Ana Photographer" and clip.license == "Pexels License"
     assert clip.source_url.endswith("-11/") and clip.path.exists()
+
+
+def test_style_filter_skips_urban_clips(source):
+    px = PexelsVideoSource(source, api_key="k", session=FakeSession({}),
+                           config=PexelsConfig(max_retries=1, exclude_words=("city", "building")))
+    assert not px.is_usable(video(1, "starry-sky-over-city-building", PORTRAIT))
+    assert px.is_usable(video(2, "starry-sky-over-mountains", PORTRAIT))
+
+
+@needs_ffmpeg
+def test_dark_clips_are_skipped(source, tmp_path):
+    dark = tmp_path / "dark.mp4"
+    subprocess.run([shutil.which("ffmpeg"), "-v", "error", "-f", "lavfi", "-i", "color=c=0x080808:s=1080x1920:d=2",
+                    "-c:v", "libx264", str(dark)], check=True)
+    payload = {"videos": [video(20, "misty-forest-valley", PORTRAIT)]}
+    px = PexelsVideoSource(source, api_key="k", session=FakeSession(payload, video_bytes=dark.read_bytes()),
+                           config=PexelsConfig(max_retries=1, min_mean_luma=45))
+    with pytest.raises(PexelsError, match="no suitable clips"):
+        px.select("gratitude", 1, MediaRegistry(tmp_path / "r.json"), "2026-10-04")
+    assert px.mean_luma(px.download_dir / "20_1080x1920.mp4") < 45

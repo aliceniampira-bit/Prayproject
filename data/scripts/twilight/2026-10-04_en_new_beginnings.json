@@ -1,6 +1,7 @@
 {
   "date": "2026-10-04",
   "language": "en",
+  "type": "full",
   "theme": "new_beginnings",
   "title": "A Clean Page",
   "hook": "Lord, before I reach for my phone this morning, I want to reach for you.",
@@ -11,7 +12,7 @@
     "I don't want to rush through this day without you. Walk with me through every hour."
   ],
   "closing": "In Jesus' name, amen.",
-  "tiktok_description": "Start your morning here before anything else. 🌅 Say amen if this is your prayer today.",
+  "description": "Start your morning here before anything else. 🌅 Say amen if this is your prayer today.",
   "hashtags": [
     "#morningprayer",
     "#dailyprayer",

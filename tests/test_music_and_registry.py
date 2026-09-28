@@ -9,9 +9,10 @@ def _lib(tmp_path, verified):
     (tmp_path / "b.wav").write_bytes(b"x")
     tracks = [
         {"id": "a", "file": "a.wav", "title": "A", "artist": "x", "source_url": "u", "license": "L",
-         "commercial_use_verified": verified, "tiktok_use_verified": verified},
+         "commercial_use_verified": verified,
+         "platforms_verified": {"tiktok": verified, "instagram_reels": verified, "youtube_shorts": verified}},
         {"id": "b", "file": "b.wav", "title": "B", "artist": "x", "source_url": "u", "license": "L",
-         "commercial_use_verified": False, "tiktok_use_verified": False},
+         "commercial_use_verified": False, "tiktok_use_verified": False},  # older format still loads
     ]
     path = tmp_path / "music_library.json"
     path.write_text(json.dumps({"tracks": tracks}))
@@ -29,6 +30,19 @@ def test_unverified_only_when_allowed(tmp_path):
     tracks = load_library(_lib(tmp_path, False))
     assert select_track(tracks, reg, allow_unverified=False) is None
     assert not select_track(tracks, reg, allow_unverified=True).cleared_for_publication
+
+
+def test_clearance_is_per_platform(tmp_path):
+    lib = _lib(tmp_path, True)
+    raw = json.loads(lib.read_text())
+    raw["tracks"][0]["platforms_verified"]["youtube_shorts"] = False
+    lib.write_text(json.dumps(raw))
+    track = load_library(lib)[0]
+    assert track.cleared_for("tiktok") and not track.cleared_for("youtube_shorts")
+    assert not track.cleared_for_all(["tiktok", "youtube_shorts"])
+    assert track.provenance()["cleared_platforms"] == ["instagram_reels", "tiktok"]
+    legacy = load_library(lib)[1]
+    assert legacy.platforms_verified == {"tiktok": False}
 
 
 def test_registry_tracks_recent_use(tmp_path):

@@ -1,5 +1,5 @@
 {
-  "preset": "twilight_words",
+  "preset": "sunrise_cinematic",
   "project": {
     "account_name": "Daily Prayer Studio",
     "handle": "@dailyprayerstudio"
@@ -8,28 +8,84 @@
     "en": {
       "output_folder": "english",
       "closing_tagline": "A new prayer every day",
-      "words_per_minute": 130
+      "words_per_minute": 130,
+      "opening_label": {
+        "short": "A short prayer",
+        "full": "Today's prayer"
+      }
     },
     "es": {
       "output_folder": "spanish",
       "closing_tagline": "Una oración nueva cada día",
-      "words_per_minute": 135
+      "words_per_minute": 135,
+      "opening_label": {
+        "short": "Una oración breve",
+        "full": "La oración de hoy"
+      }
     }
   },
   "video": {
+    "_comment": "Especificación del video maestro. Se puede cambiar aquí sin tocar el código.",
     "width": 1080,
     "height": 1920,
+    "aspect_ratio": "9:16",
     "fps": 30,
-    "min_duration_seconds": 60,
-    "max_duration_seconds": 90,
+    "container": "mp4",
+    "video_codec": "libx264",
+    "audio_codec": "aac",
+    "pixel_format": "yuv420p",
+    "h264_profile": "high",
+    "h264_level": "4.2",
+    "crf": 20,
+    "preset": "medium",
+    "audio_bitrate": "192k",
+    "audio_sample_rate": 48000,
     "lead_in_seconds": 1.5,
     "outro_seconds": 4.0,
     "crossfade_seconds": 1.2,
     "clips_per_video": 4,
-    "title_card_seconds": 4.5,
-    "crf": 20,
-    "preset": "medium",
-    "audio_bitrate": "192k"
+    "title_card_seconds": 4.5
+  },
+  "default_prayer_type": "full",
+  "prayer_types": {
+    "_comment": "Duración total del video (con entrada y cierre). La duración sale del guion y del ritmo natural de la voz: nunca se rellena.",
+    "short": {
+      "label": {
+        "en": "Short prayer",
+        "es": "Oración corta"
+      },
+      "min_seconds": 30,
+      "max_seconds": 60,
+      "max_prayer_paragraphs": 2,
+      "allow_bible_verse": false,
+      "structure": [
+        "hook: conecta en la primera frase",
+        "prayer: oración breve, emotiva y original (1-2 párrafos)",
+        "closing: invitación a la reflexión"
+      ],
+      "recommended_themes": [
+        "gratitude",
+        "faith",
+        "inner_peace",
+        "hope"
+      ]
+    },
+    "full": {
+      "label": {
+        "en": "Full prayer",
+        "es": "Oración completa"
+      },
+      "min_seconds": 60,
+      "max_seconds": 90,
+      "max_prayer_paragraphs": 5,
+      "allow_bible_verse": true,
+      "structure": [
+        "hook: introducción breve",
+        "bible_verse (opcional)",
+        "prayer: oración desarrollada, tono cálido",
+        "closing: cierre reflexivo"
+      ]
+    }
   },
   "voice": {
     "provider": "espeak_local",
@@ -99,7 +155,9 @@
     "logs_dir": "logs",
     "media_registry": "data/media_registry.json",
     "fonts_dir": "assets/fonts",
-    "branding_dir": "assets/branding"
+    "branding_dir": "assets/branding",
+    "masters_folder": "_master",
+    "platforms_file": "config/platforms.json"
   },
   "pexels": {
     "per_page": 15,

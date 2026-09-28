@@ -31,6 +31,11 @@ assets/fonts/*
 !assets/fonts/Jost-Regular.ttf
 !assets/fonts/Jost-Bold.ttf
 !assets/fonts/Jost-OFL.txt
+!assets/fonts/CormorantGaramond-SemiBold.ttf
+!assets/fonts/CormorantGaramond-OFL.txt
+!assets/fonts/Lora-Medium.ttf
+!assets/fonts/Lora-MediumItalic.ttf
+!assets/fonts/Lora-OFL.txt
 
 # OS / editors
 .DS_Store

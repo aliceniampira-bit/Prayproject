@@ -1,6 +1,7 @@
 {
   "date": "2026-10-04",
   "language": "es",
+  "type": "full",
   "theme": "new_beginnings",
   "title": "Una página en blanco",
   "hook": "Señor de mi vida, antes de mirar el teléfono quiero mirarte a ti.",
@@ -11,7 +12,7 @@
     "No quiero atravesar este día a la carrera y sin ti. Camina conmigo en cada hora."
   ],
   "closing": "En el nombre de Jesús, amén.",
-  "tiktok_description": "Empieza tu mañana aquí, antes que nada. 🌅 Escribe amén si esta es tu oración de hoy.",
+  "description": "Empieza tu mañana aquí, antes que nada. 🌅 Escribe amén si esta es tu oración de hoy.",
   "hashtags": [
     "#oraciondelamañana",
     "#oraciondiaria",

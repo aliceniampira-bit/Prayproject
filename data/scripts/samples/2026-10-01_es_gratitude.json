@@ -1,6 +1,7 @@
 {
   "date": "2026-10-01",
   "language": "es",
+  "type": "full",
   "theme": "gratitude",
   "title": "Gracias por este día",
   "hook": "Antes de que empiece el ruido del día, detente un momento y da gracias.",
@@ -22,7 +23,7 @@
     "Que mi gratitud no se quede en palabras. Dame un corazón paciente, generoso y atento con quienes me rodean. Amén."
   ],
   "closing": "¿Por qué quieres dar gracias hoy? Guárdalo en tu corazón durante el día.",
-  "tiktok_description": "Una breve oración de gratitud para empezar el día. 🙏 Guárdala para las mañanas en que necesites recordarlo.",
+  "description": "Una breve oración de gratitud para empezar el día. 🙏 Guárdala para las mañanas en que necesites recordarlo.",
   "hashtags": [
     "#oracion",
     "#oraciondiaria",

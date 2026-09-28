@@ -1,5 +1,19 @@
 # Tipografías
 
+## Plantilla de la cuenta (`sunrise_cinematic`, la activa)
+
+Incluidas en esta carpeta, con licencia SIL Open Font License (libres también para uso comercial),
+descargadas del servicio oficial de Google Fonts:
+
+| Uso | Archivo | Licencia |
+|---|---|---|
+| Títulos y cierre | `CormorantGaramond-SemiBold.ttf` | `CormorantGaramond-OFL.txt` |
+| Subtítulos | `Lora-Medium.ttf` | `Lora-OFL.txt` |
+| Versículos | `Lora-MediumItalic.ttf` | `Lora-OFL.txt` |
+| Etiquetas y marca | `Jost-Regular.ttf` | `Jost-OFL.txt` |
+
+## Plantilla base (`visual_style.json` sin preset)
+
 La plantilla (`config/visual_style.json`) busca primero aquí:
 
 - `Lora-Bold.ttf` y `Lora-Italic.ttf` (títulos y versículos)

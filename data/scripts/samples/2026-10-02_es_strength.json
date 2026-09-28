@@ -1,6 +1,7 @@
 {
   "date": "2026-10-02",
   "language": "es",
+  "type": "full",
   "theme": "strength",
   "title": "Cuando ya no puedes más",
   "hook": "Si hoy la carga te pesa más de lo que puedes llevar, esta oración es para ti.",
@@ -22,7 +23,7 @@
     "Sostén también a quienes amo y están sufriendo. Y cuando esta etapa pase, permíteme mirar atrás y descubrir tu mano en cada día difícil. Amén."
   ],
   "closing": "Respira despacio. Hoy no tienes que cargarlo todo tú.",
-  "tiktok_description": "Para los días en que todo pesa demasiado. No estás caminando a solas. 🤍",
+  "description": "Para los días en que todo pesa demasiado. No estás caminando a solas. 🤍",
   "hashtags": [
     "#oracion",
     "#oraciondiaria",

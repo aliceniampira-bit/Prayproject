@@ -26,7 +26,7 @@ from typing import Any
 import requests
 
 from .config import Settings, get_secret
-from .ffmpeg_utils import FFmpegError, duration_of
+from .ffmpeg_utils import FFmpegError, duration_of, run_ffmpeg
 from .media_registry import MediaRegistry
 from .video_sources import Clip, VideoSource, VideoSourceError
 
@@ -60,6 +60,8 @@ class PexelsConfig:
     search_cache_days: int = 7
     max_retries: int = 3
     timeout: int = 30
+    exclude_words: tuple[str, ...] = ()   # slug words that do not fit the visual identity (e.g. "city")
+    min_mean_luma: float = 0.0            # skip clips darker than this average luma (0-255); 0 = off
 
 
 class PexelsVideoSource(VideoSource):
@@ -68,7 +70,10 @@ class PexelsVideoSource(VideoSource):
         self.api_key = api_key or get_secret("PEXELS_API_KEY", "downloading background videos from Pexels")
         self.settings = settings
         self.session = session or requests.Session()
-        self.cfg = config or PexelsConfig(**settings.data.get("pexels", {}))
+        raw = {k: v for k, v in settings.data.get("pexels", {}).items() if not k.startswith("_")}
+        if "exclude_words" in raw:
+            raw["exclude_words"] = tuple(raw["exclude_words"])
+        self.cfg = config or PexelsConfig(**raw)
         cache = settings.root / "data" / "cache" / "pexels"
         self.search_cache = cache / "search"
         self.download_dir = cache / "videos"
@@ -139,10 +144,27 @@ class PexelsVideoSource(VideoSource):
             return min(landscape, key=lambda f: f["height"])
         return None
 
+    def off_style(self, video: dict[str, Any]) -> bool:
+        return bool(self.slug_words(video) & {w.lower() for w in self.cfg.exclude_words})
+
     def is_usable(self, video: dict[str, Any]) -> bool:
         duration = video.get("duration") or 0
         return (self.cfg.min_duration <= duration <= self.cfg.max_duration
-                and not self.looks_like_people(video) and self.pick_file(video) is not None)
+                and not self.looks_like_people(video) and not self.off_style(video)
+                and self.pick_file(video) is not None)
+
+    def mean_luma(self, path: Path) -> float:
+        """Average brightness (Y, 0-255) of a few frames, cached next to the download."""
+        cache = path.with_suffix(".luma")
+        if cache.exists():
+            return float(cache.read_text())
+        proc = run_ffmpeg(["-t", "6", "-i", str(path), "-vf",
+                           "fps=1,scale=96:-2,signalstats,metadata=print:key=lavfi.signalstats.YAVG",
+                           "-f", "null", "-"])
+        values = [float(v) for v in re.findall(r"YAVG=([\d.]+)", proc.stderr)]
+        luma = sum(values) / len(values) if values else 255.0
+        cache.write_text(f"{luma:.1f}")
+        return luma
 
     # ---- download --------------------------------------------------------------
     def download(self, video: dict[str, Any]) -> Path:
@@ -205,6 +227,9 @@ class PexelsVideoSource(VideoSource):
                         path = self.download(video)
                     except PexelsError as exc:
                         log.warning("%s", exc)
+                        continue
+                    if self.cfg.min_mean_luma and self.mean_luma(path) < self.cfg.min_mean_luma:
+                        log.info("Skipping dark Pexels clip %s (luma %.0f)", video["id"], self.mean_luma(path))
                         continue
                     chosen.append(self.to_clip(video, path, theme))
                     break  # one clip per query keeps the sequence varied

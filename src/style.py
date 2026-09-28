@@ -62,11 +62,30 @@ def resolve_font(spec: dict, fonts_dir: Path) -> ResolvedFont:
                 continue
             found = _find_in(directory, name)
             if found:
-                family, style = ImageFont.truetype(str(found), 20).getname()
+                family, style = _legacy_names(found)
                 style_l = (style or "").lower()
                 return ResolvedFont(found, family, "bold" in style_l,
                                     "italic" in style_l or "oblique" in style_l, i > 0)
     raise StyleError(f"No font found for {candidates}. Put the font file in {fonts_dir}.")
+
+
+def _legacy_names(path: Path) -> tuple[str, str]:
+    """Family and style as libass matches them (name table IDs 1 and 2).
+
+    Static instances of variable fonts (e.g. "Lora Medium") use a different
+    legacy family than the typographic family Pillow reports ("Lora"); libass
+    only knows the legacy one, so using Pillow's name would silently fall back
+    to another font."""
+    try:
+        from fontTools.ttLib import TTFont
+        with TTFont(str(path), fontNumber=0, lazy=True) as font:
+            names = font["name"]
+            family, style = names.getDebugName(1), names.getDebugName(2)
+            if family:
+                return family, style or "Regular"
+    except Exception:  # fontTools missing or unusual file: fall back to Pillow
+        pass
+    return ImageFont.truetype(str(path), 20).getname()
 
 
 def ass_color(hex_color: str, alpha: float = 0.0) -> str:

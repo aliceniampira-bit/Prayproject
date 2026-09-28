@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-07",
+  "language": "es",
+  "type": "short",
+  "theme": "hope",
+  "title": "Cuando la esperanza se apaga",
+  "hook": "Si hoy te cuesta levantar la mirada, quédate conmigo un momento.",
+  "prayer": [
+    "Señor, tú conoces lo que llevo por dentro, aunque no se lo cuente a nadie. Hay días en que no veo la salida, pero tú ya caminas delante de mí.",
+    "Enciende de nuevo la esperanza en mi corazón, aunque sea una llama pequeña. Que no se apague mientras espero en ti. Amén."
+  ],
+  "closing": "Respira hondo. ¿Qué parte de tu historia necesitas dejar hoy en las manos de Dios?",
+  "description": "Una oración breve para cuando la esperanza parece lejos. 🌅 Guárdala para el día que la necesites.",
+  "hashtags": ["#oracion", "#esperanza", "#oraciondiaria", "#fe", "#Dios"],
+  "bible_verse": null,
+  "review": {"status": "pending"},
+  "generator": "claude-code (curated sample, short)"
+}

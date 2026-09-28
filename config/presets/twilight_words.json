@@ -2,8 +2,6 @@
   "_comment": "Formato inspirado en el video de referencia: paisajes al atardecer con cortes secos, texto centrado de 1-3 palabras sincronizado con la voz, marca fija, sin tarjetas de título ni de cierre. Solo sobrescribe valores de settings.json y visual_style.json.",
   "settings": {
     "video": {
-      "min_duration_seconds": 45,
-      "max_duration_seconds": 70,
       "lead_in_seconds": 0.8,
       "outro_seconds": 2.0,
       "transition": "cut",

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -52,9 +52,13 @@ class Settings:
     style: dict[str, Any]
     themes: dict[str, Any]
     root: Path = PROJECT_ROOT
+    platforms: dict[str, Any] = field(default_factory=dict)
 
     def __getitem__(self, key: str) -> Any:
         return self.data[key]
+
+    def get(self, key: str, default: Any = None) -> Any:
+        return self.data.get(key, default)
 
     def path(self, key: str) -> Path:
         """Resolve a path from settings['paths'] relative to the project root."""
@@ -65,6 +69,23 @@ class Settings:
             return self.data["languages"][lang]
         except KeyError as exc:
             raise ConfigError(f"Unsupported language '{lang}'. Configure it in settings.json.") from exc
+
+    def prayer_type(self, name: str | None) -> dict[str, Any]:
+        """Duration range and structure rules for a prayer type ('short' or 'full')."""
+        name = name or self.data.get("default_prayer_type", "full")
+        types = {k: v for k, v in self.data.get("prayer_types", {}).items() if not k.startswith("_")}
+        if name not in types:
+            raise ConfigError(f"Unknown prayer type '{name}'. Valid: {', '.join(types)} (settings.json prayer_types).")
+        return types[name]
+
+    def platform(self, name: str) -> dict[str, Any]:
+        try:
+            return self.platforms["platforms"][name]
+        except KeyError as exc:
+            raise ConfigError(f"Unknown platform '{name}'. Configure it in platforms.json.") from exc
+
+    def enabled_platforms(self) -> list[str]:
+        return list(self.platforms.get("enabled", []))
 
 
 def load_settings(config_dir: Path | None = None, overrides: dict[str, Any] | None = None) -> Settings:
@@ -80,7 +101,22 @@ def load_settings(config_dir: Path | None = None, overrides: dict[str, Any] | No
         _deep_update(style, preset.get("style", {}))
     if overrides:
         _deep_update(data, overrides)
-    return Settings(data=data, style=style, themes=_load_json(cdir / "themes.json"))
+    platforms_file = cdir / Path(data.get("paths", {}).get("platforms_file", "platforms.json")).name
+    platforms = _load_json(platforms_file) if platforms_file.exists() else {"enabled": [], "platforms": {}}
+    if "platforms" in (overrides or {}):
+        _deep_update(platforms, overrides["platforms"])
+    _widen_safe_zone(style, platforms)
+    return Settings(data=data, style=style, themes=_load_json(cdir / "themes.json"), platforms=platforms)
+
+
+def _widen_safe_zone(style: dict[str, Any], platforms: dict[str, Any]) -> None:
+    """One master video serves every network, so text must avoid the UI of all of them."""
+    zone = style.setdefault("safe_zone", {})
+    for name in platforms.get("enabled", []):
+        overlay = platforms.get("platforms", {}).get(name, {}).get("ui_overlay", {})
+        for side in ("top", "bottom", "left", "right"):
+            if side in overlay:
+                zone[side] = max(int(zone.get(side, 0)), int(overlay[side]))
 
 
 def _deep_update(base: dict[str, Any], extra: dict[str, Any]) -> None:

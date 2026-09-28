@@ -1,0 +1,178 @@
+{
+  "_comment": "Identidad audiovisual de la cuenta: cinematográfica y contemplativa. Luz natural (amaneceres, cielos, montañas, bosques, océanos), fundidos lentos, movimiento de cámara suave, serif elegante en crema y dorado. Solo sobrescribe valores de settings.json y visual_style.json.",
+  "settings": {
+    "video": {
+      "lead_in_seconds": 1.2,
+      "outro_seconds": 3.5,
+      "transition": "crossfade",
+      "crossfade_seconds": 1.0,
+      "target_clip_seconds": 7.0,
+      "clips_per_video": 8,
+      "title_card_seconds": 3.0,
+      "closing_card": true,
+      "closing_show_handle": false
+    },
+    "languages": {
+      "en": {
+        "words_per_minute": 140
+      },
+      "es": {
+        "words_per_minute": 145
+      }
+    },
+    "voice": {
+      "pause_between_sentences_seconds": 0.45,
+      "pause_between_sections_seconds": 0.9,
+      "voices": {
+        "espeak_local": {
+          "speed_wpm": 140
+        }
+      }
+    },
+    "audio": {
+      "music_below_voice_db": 16.0,
+      "min_voice_over_music_db": 10.0
+    },
+    "subtitles": {
+      "mode": "phrases",
+      "max_words_per_cue": 8,
+      "max_lines": 2,
+      "uppercase": false,
+      "max_chars_per_second": 20,
+      "min_cue_seconds": 0.9
+    },
+    "visual_queries": [
+      "sunrise mountains",
+      "sun rays through forest",
+      "ocean sunrise waves",
+      "golden hour clouds sky",
+      "misty forest morning",
+      "lake sunrise reflection",
+      "mountain valley fog sunrise",
+      "sunlight over sea aerial",
+      "meadow morning light",
+      "clouds timelapse sunrise"
+    ],
+    "_visual_notes": "Planos amplios y lentos con luz natural; sin personas identificables, sin ciudades ni carreteras; tonos cálidos.",
+    "pexels": {
+      "_comment": "Filtros de estilo: descarta clips cuyo nombre en Pexels sugiere ciudad o tráfico, y los demasiado oscuros para una estética de luz natural.",
+      "exclude_words": [
+        "city",
+        "cities",
+        "building",
+        "buildings",
+        "apartment",
+        "skyscraper",
+        "street",
+        "streets",
+        "car",
+        "cars",
+        "traffic",
+        "highway",
+        "road",
+        "urban",
+        "downtown",
+        "construction",
+        "neon"
+      ],
+      "min_mean_luma": 45
+    }
+  },
+  "style": {
+    "colors": {
+      "text": "#FFF6E8",
+      "verse_text": "#FDEFD8",
+      "accent": "#EDC98A",
+      "outline": "#1E140B",
+      "shadow": "#000000",
+      "overlay": "#140C05"
+    },
+    "overlay_opacity": 0.2,
+    "card_dim": 0.12,
+    "fonts": {
+      "title": {
+        "file": "CormorantGaramond-SemiBold.ttf",
+        "fallbacks": [
+          "Lora-Medium.ttf",
+          "DejaVuSerif-Bold.ttf",
+          "georgiab.ttf"
+        ]
+      },
+      "body": {
+        "file": "Lora-Medium.ttf",
+        "fallbacks": [
+          "DejaVuSerif.ttf",
+          "georgia.ttf",
+          "Georgia.ttf"
+        ]
+      },
+      "verse": {
+        "file": "Lora-MediumItalic.ttf",
+        "fallbacks": [
+          "DejaVuSerif-Italic.ttf",
+          "georgiai.ttf"
+        ]
+      },
+      "brand": {
+        "file": "Jost-Regular.ttf",
+        "fallbacks": [
+          "DejaVuSans.ttf",
+          "arial.ttf",
+          "Arial.ttf"
+        ]
+      }
+    },
+    "sizes": {
+      "title": 104,
+      "subtitle": 62,
+      "verse": 60,
+      "verse_reference": 40,
+      "closing_name": 84,
+      "closing_tagline": 46,
+      "brand": 30,
+      "eyebrow": 34
+    },
+    "outline_px": 1,
+    "shadow_px": 3,
+    "text_blur": 0.8,
+    "text_halo": {
+      "enabled": true,
+      "size": 16,
+      "opacity": 0.5
+    },
+    "text_spacing": 0,
+    "layout": {
+      "title_center_y": 860,
+      "eyebrow_offset_y": 150,
+      "subtitle_bottom_margin": 640,
+      "closing_center_y": 860,
+      "brand_center_y": 1180
+    },
+    "ornament": {
+      "enabled": true,
+      "width": 180,
+      "height": 3,
+      "gap": 70
+    },
+    "brand_text": null,
+    "color_grade": {
+      "brightness": 0.0,
+      "contrast": 1.05,
+      "saturation": 1.04,
+      "gamma": 0.98,
+      "warmth": 0.06
+    },
+    "motion": {
+      "enabled": true,
+      "overscan": 0.08
+    },
+    "vignette": true,
+    "fade_in_seconds": 0.8,
+    "fade_out_seconds": 1.4,
+    "cue_fade_in_ms": 220,
+    "cover": {
+      "title_center_y": 900,
+      "frame_fraction": 0.5
+    }
+  }
+}

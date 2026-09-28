@@ -76,7 +76,8 @@ def make_sample_assets(folder: Path, clip_seconds: int = 12, music_seconds: int 
     library = {"tracks": [{
         "id": "test-ambient-piano", "file": pad.name, "title": "Generated ambient piano (test)", "artist": "Daily Prayer Studio",
         "source_url": "", "license": "Generated locally — test only", "license_url": "", "instrumental": True,
-        "commercial_use_verified": False, "tiktok_use_verified": False,
+        "commercial_use_verified": False,
+        "platforms_verified": {"tiktok": False, "instagram_reels": False, "youtube_shorts": False},
         "restrictions": "Test tone for pipeline development. Do not publish.",
         "verified_by": None, "verified_on": None}]}
     (music_dir / "music_library.json").write_text(json.dumps(library, indent=2) + "\n", encoding="utf-8")

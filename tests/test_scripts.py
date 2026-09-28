@@ -25,7 +25,7 @@ def test_missing_field_is_rejected():
 def test_language_mismatch_is_detected(settings, sample_paths):
     en = PrayerScript.load(next(p for p in sample_paths if "_en_" in p.name))
     es = PrayerScript.load(next(p for p in sample_paths if "_es_" in p.name))
-    en.tiktok_description = es.tiktok_description
+    en.description = es.description
     res = validate_script(en, settings.themes)
     assert any("description" in e for e in res.errors)
 

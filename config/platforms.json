@@ -1,0 +1,99 @@
+{
+  "_comment": "Reglas por red social. Los límites cambian: compruébalos en las fuentes oficiales (official_sources) antes de publicar y actualiza last_reviewed. Las zonas de interfaz (ui_overlay) son aproximaciones en píxeles sobre 1080x1920; ajústalas con capturas reales de tu teléfono.",
+  "enabled": ["tiktok", "instagram_reels", "youtube_shorts"],
+  "platforms": {
+    "tiktok": {
+      "label": "TikTok",
+      "folder": "tiktok",
+      "last_reviewed": null,
+      "official_sources": [
+        "https://support.tiktok.com/en/using-tiktok/creating-videos/upload-videos",
+        "https://www.tiktok.com/creator-academy/",
+        "https://support.tiktok.com/en/business-and-creator/creator-rewards-program",
+        "https://developers.tiktok.com/doc/content-posting-api-get-started"
+      ],
+      "video": {
+        "max_duration_seconds": 600,
+        "max_file_size_mb": 287,
+        "transcode": null
+      },
+      "ui_overlay": {"top": 200, "bottom": 480, "left": 60, "right": 170},
+      "metadata": {
+        "has_title_field": false,
+        "caption_max_chars": 4000,
+        "max_hashtags": 5,
+        "fixed_hashtags": [],
+        "caption_template": "{description}\n\n{hashtags}"
+      },
+      "cover": {"upload_supported": true, "note": "Sube cover.jpg como portada, o elige en la app el fotograma sugerido (cover_frame_seconds)."},
+      "captions_file_upload": false,
+      "creator_rewards": {
+        "min_duration_seconds": 60,
+        "note": "Creator Rewards exige, entre otros requisitos, videos originales de más de 1 minuto. Comprueba los requisitos vigentes antes de contar con ello."
+      },
+      "publishing_note": "Publicación manual por ahora. No añadas un sonido de la biblioteca de TikTok: el video ya lleva música con licencia."
+    },
+    "instagram_reels": {
+      "label": "Instagram Reels",
+      "folder": "instagram_reels",
+      "last_reviewed": null,
+      "official_sources": [
+        "https://help.instagram.com/270447560766967",
+        "https://developers.facebook.com/docs/instagram-platform/content-publishing",
+        "https://help.instagram.com/1631821640426723"
+      ],
+      "video": {
+        "max_duration_seconds": 180,
+        "max_file_size_mb": 1000,
+        "transcode": null
+      },
+      "ui_overlay": {"top": 220, "bottom": 520, "left": 60, "right": 160},
+      "metadata": {
+        "has_title_field": false,
+        "caption_max_chars": 2200,
+        "max_hashtags": 5,
+        "fixed_hashtags": [],
+        "caption_template": "{title}\n\n{description}\n\n{hashtags}"
+      },
+      "cover": {
+        "upload_supported": true,
+        "grid_crop_aspect": "3:4",
+        "note": "Instagram muestra la portada recortada en la cuadrícula del perfil; el título de cover.jpg queda dentro del recorte central."
+      },
+      "captions_file_upload": false,
+      "publishing_note": "Publicación manual por ahora. No añadas audio de la biblioteca de Instagram: el video ya lleva música con licencia."
+    },
+    "youtube_shorts": {
+      "label": "YouTube Shorts",
+      "folder": "youtube_shorts",
+      "last_reviewed": null,
+      "official_sources": [
+        "https://support.google.com/youtube/answer/10059070",
+        "https://support.google.com/youtube/answer/6390658",
+        "https://support.google.com/youtube/answer/2734796",
+        "https://developers.google.com/youtube/v3/docs/videos/insert"
+      ],
+      "video": {
+        "max_duration_seconds": 180,
+        "max_file_size_mb": 2000,
+        "transcode": null
+      },
+      "ui_overlay": {"top": 220, "bottom": 500, "left": 60, "right": 190},
+      "metadata": {
+        "has_title_field": true,
+        "title_max_chars": 100,
+        "title_template": {"en": "{title} | {type_label}", "es": "{title} | {type_label}"},
+        "caption_max_chars": 5000,
+        "max_hashtags": 5,
+        "fixed_hashtags": [],
+        "caption_template": "{description}\n\n{credits}\n\n{hashtags}"
+      },
+      "cover": {
+        "upload_supported": false,
+        "note": "En Shorts la miniatura se elige entre los fotogramas del video en la app de YouTube; usa el fotograma sugerido (cover_frame_seconds), que muestra el título."
+      },
+      "captions_file_upload": true,
+      "publishing_note": "Publicación manual por ahora. Sube subtitles.srt en YouTube Studio > Subtítulos si quieres subtítulos seleccionables. Comprueba que la música no esté registrada en Content ID."
+    }
+  }
+}

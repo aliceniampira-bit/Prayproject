@@ -1,6 +1,7 @@
 {
   "date": "2026-10-03",
   "language": "en",
+  "type": "full",
   "theme": "inner_peace",
   "title": "Quiet My Heart",
   "hook": "Your mind has been racing all day. Let's slow down together for a moment.",
@@ -22,7 +23,7 @@
     "I cannot control everything, and I was never meant to. So I place this day, and all its unfinished pieces, in your hands. Amen."
   ],
   "closing": "Stay here a moment longer. Breathe in slowly, and let his peace settle over you.",
-  "tiktok_description": "A short prayer for a restless mind. Put your worries down for a moment. 🕊️",
+  "description": "A short prayer for a restless mind. Put your worries down for a moment. 🕊️",
   "hashtags": [
     "#prayer",
     "#dailyprayer",

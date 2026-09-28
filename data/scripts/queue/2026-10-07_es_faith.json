@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-07",
+  "language": "es",
+  "type": "full",
+  "theme": "faith",
+  "title": "Fe mientras espero",
+  "hook": "¿Estás esperando una respuesta de Dios que todavía no llega? Esta oración es para ti.",
+  "bible_verse": {
+    "reference": "Hebreos 11:1",
+    "translation": "RV1909",
+    "text": "Es pues la fe la sustancia de las cosas que se esperan, la demostración de las cosas que no se ven.",
+    "spoken_intro": "Dice la Escritura:",
+    "verification": {
+      "status": "pending",
+      "verified_by": null,
+      "source": null,
+      "note": "Citado de memoria (Reina-Valera 1909, dominio público). Compáralo con una edición fiable antes de marcarlo como 'verified'."
+    }
+  },
+  "prayer": [
+    "Señor, tú sabes cuánto tiempo llevo esperando. He orado, he llorado y, a veces, me he cansado de preguntar. Aun así, aquí estoy otra vez, porque no conozco un lugar más seguro que tu presencia.",
+    "Recuérdame que la semilla trabaja bajo la tierra mucho antes de brotar, y que tu silencio no es olvido. Pongo en tus manos lo que no puedo controlar. Dame paz para esperar y valor para dar el paso de hoy. En el nombre de Jesús, amén."
+  ],
+  "closing": "Piensa en eso que sigues esperando. ¿Puedes darle gracias a Dios hoy, antes de ver la respuesta?",
+  "description": "Una oración de fe para cuando la respuesta de Dios tarda en llegar. 🙏 Compártela con alguien que está esperando.",
+  "hashtags": ["#oracion", "#fe", "#oraciondiaria", "#confianzaenDios", "#cristianos", "#Jesus"],
+  "review": {"status": "pending"},
+  "generator": "claude-code (curated sample, full)"
+}

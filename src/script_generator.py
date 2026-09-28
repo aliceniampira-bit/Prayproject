@@ -19,7 +19,9 @@ from typing import Any, Iterable
 
 SUPPORTED_LANGUAGES = ("en", "es")
 REQUIRED_FIELDS = ("date", "language", "theme", "title", "hook", "prayer", "closing",
-                   "tiktok_description", "hashtags")
+                   "description", "hashtags")
+PRAYER_TYPES = ("short", "full")
+PLATFORM_OVERRIDE_FIELDS = ("title", "description", "hashtags")
 VERSE_STATUSES = ("pending", "verified", "rejected")
 
 # Very small stopword lists: enough to tell English from Spanish in a QC check.
@@ -81,28 +83,35 @@ class PrayerScript:
     hook: str
     prayer: list[str]
     closing: str
-    tiktok_description: str
+    description: str
     hashtags: list[str]
     bible_verse: BibleVerse | None = None
     review_status: str = "pending"
     generator: str = "curated"
+    type: str = "full"
+    platform_overrides: dict[str, dict[str, Any]] = field(default_factory=dict)
     extra: dict[str, Any] = field(default_factory=dict)
 
     # ---- serialization -------------------------------------------------
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "PrayerScript":
+    def from_dict(cls, d: dict[str, Any], default_type: str = "full") -> "PrayerScript":
+        d = dict(d)
+        if "description" not in d and "tiktok_description" in d:  # older scripts
+            d["description"] = d.pop("tiktok_description")
         missing = [k for k in REQUIRED_FIELDS if k not in d]
         if missing:
             raise ScriptValidationError(f"Script is missing fields: {', '.join(missing)}")
-        known = set(REQUIRED_FIELDS) | {"bible_verse", "review", "generator",
+        known = set(REQUIRED_FIELDS) | {"bible_verse", "review", "generator", "type", "platform_overrides",
                                          "estimated_duration_seconds", "subtitle_text", "id"}
         return cls(
             date=d["date"], language=d["language"], theme=d["theme"], title=d["title"],
             hook=d["hook"], prayer=list(d["prayer"]), closing=d["closing"],
-            tiktok_description=d["tiktok_description"], hashtags=list(d["hashtags"]),
+            description=d["description"], hashtags=list(d["hashtags"]),
             bible_verse=BibleVerse.from_dict(d["bible_verse"]) if d.get("bible_verse") else None,
             review_status=(d.get("review") or {}).get("status", "pending"),
             generator=d.get("generator", "curated"),
+            type=d.get("type") or default_type,
+            platform_overrides=dict(d.get("platform_overrides") or {}),
             extra={k: v for k, v in d.items() if k not in known},
         )
 
@@ -114,11 +123,12 @@ class PrayerScript:
     def to_dict(self, words_per_minute: int | None = None) -> dict[str, Any]:
         d: dict[str, Any] = {
             "id": self.id,
-            "date": self.date, "language": self.language, "theme": self.theme,
+            "date": self.date, "language": self.language, "type": self.type, "theme": self.theme,
             "title": self.title, "hook": self.hook,
             "bible_verse": self.bible_verse.to_dict() if self.bible_verse else None,
             "prayer": self.prayer, "closing": self.closing,
-            "tiktok_description": self.tiktok_description, "hashtags": self.hashtags,
+            "description": self.description, "hashtags": self.hashtags,
+            "platform_overrides": self.platform_overrides,
             "subtitle_text": self.subtitle_text,
             "review": {"status": self.review_status},
             "generator": self.generator,
@@ -137,7 +147,12 @@ class PrayerScript:
     # ---- derived data --------------------------------------------------
     @property
     def id(self) -> str:
-        return f"{self.date}_{self.language}_{self.theme}"
+        return f"{self.date}_{self.language}_{self.type}_{self.theme}"
+
+    @property
+    def topic_key(self) -> str:
+        """Same value for the English and Spanish versions of one topic."""
+        return f"{self.date}_{self.type}_{self.theme}"
 
     def sections(self) -> list[NarrationSection]:
         """Narration order: hook, (verse intro + verse), prayer paragraphs, closing."""
@@ -222,7 +237,12 @@ class ValidationResult:
 
 
 def validate_script(script: PrayerScript, themes: dict[str, Any], words_per_minute: int = 130,
-                    min_seconds: float | None = None, max_seconds: float | None = None) -> ValidationResult:
+                    min_seconds: float | None = None, max_seconds: float | None = None, *,
+                    type_cfg: dict[str, Any] | None = None, fixed_seconds: float = 0.0,
+                    pauses: tuple[float, float] = (0.55, 1.1),
+                    platforms: Iterable[str] | None = None) -> ValidationResult:
+    """Check a script. Durations compare the whole video: narration estimate + ``fixed_seconds``
+    (lead-in and closing card). ``type_cfg`` is the prayer type from settings.prayer_types."""
     res = ValidationResult()
     try:
         date_cls.fromisoformat(script.date)
@@ -230,9 +250,11 @@ def validate_script(script: PrayerScript, themes: dict[str, Any], words_per_minu
         res.errors.append(f"Invalid date '{script.date}' (expected YYYY-MM-DD).")
     if script.language not in SUPPORTED_LANGUAGES:
         res.errors.append(f"Unsupported language '{script.language}'.")
+    if script.type not in PRAYER_TYPES:
+        res.errors.append(f"Unknown prayer type '{script.type}'. Valid: {', '.join(PRAYER_TYPES)}.")
     if script.theme not in themes:
         res.errors.append(f"Unknown theme '{script.theme}'. Valid: {', '.join(themes)}.")
-    for name in ("title", "hook", "closing", "tiktok_description"):
+    for name in ("title", "hook", "closing", "description"):
         if not getattr(script, name).strip():
             res.errors.append(f"Field '{name}' is empty.")
     if not script.prayer or not all(p.strip() for p in script.prayer):
@@ -246,9 +268,29 @@ def validate_script(script: PrayerScript, themes: dict[str, Any], words_per_minu
     detected = detect_language(script.narration_text)
     if detected and detected != script.language:
         res.errors.append(f"Narration looks like '{detected}' but script language is '{script.language}'.")
-    detected_desc = detect_language(script.tiktok_description)
+    detected_desc = detect_language(script.description)
     if detected_desc and detected_desc != script.language:
-        res.errors.append(f"TikTok description looks like '{detected_desc}', expected '{script.language}'.")
+        res.errors.append(f"The description looks like '{detected_desc}', expected '{script.language}'.")
+
+    # No padding: duration must come from real content, not repetition or artificial pauses.
+    res.errors.extend(padding_problems(script))
+
+    known_platforms = set(platforms) if platforms is not None else None
+    for platform, override in script.platform_overrides.items():
+        if known_platforms is not None and platform not in known_platforms:
+            res.errors.append(f"platform_overrides: unknown platform '{platform}'.")
+        unknown = set(override) - set(PLATFORM_OVERRIDE_FIELDS)
+        if unknown:
+            res.errors.append(f"platform_overrides.{platform}: unknown fields {sorted(unknown)} "
+                              f"(allowed: {', '.join(PLATFORM_OVERRIDE_FIELDS)}).")
+        tags = override.get("hashtags", [])
+        if any(not re.fullmatch(r"#\w+", h) for h in tags):
+            res.errors.append(f"platform_overrides.{platform}: invalid hashtags {tags}.")
+        for key in ("title", "description"):
+            lang = detect_language(override.get(key, ""))
+            if lang and lang != script.language:
+                res.errors.append(f"platform_overrides.{platform}.{key} looks like '{lang}', "
+                                  f"expected '{script.language}'.")
 
     verse = script.bible_verse
     if verse:
@@ -262,15 +304,72 @@ def validate_script(script: PrayerScript, themes: dict[str, Any], words_per_minu
             res.warnings.append(f"Bible verse {verse.reference} ({verse.translation}) is pending human "
                                 "verification against a trusted edition.")
 
-    est = script.estimated_narration_seconds(words_per_minute)
-    if min_seconds and est < min_seconds * 0.85:
-        res.warnings.append(f"Estimated narration {est:.0f}s is short for the {min_seconds:.0f}s minimum. "
-                            "Do not pad: write more content or accept a shorter video.")
+    if type_cfg:
+        min_seconds = type_cfg.get("min_seconds", min_seconds)
+        max_seconds = type_cfg.get("max_seconds", max_seconds)
+        max_par = type_cfg.get("max_prayer_paragraphs")
+        if max_par and len(script.prayer) > max_par:
+            res.warnings.append(f"A '{script.type}' prayer should have at most {max_par} paragraphs "
+                                f"(has {len(script.prayer)}).")
+        if verse and not type_cfg.get("allow_bible_verse", True):
+            res.errors.append(f"'{script.type}' prayers do not include a Bible verse (settings.prayer_types).")
+        recommended = type_cfg.get("recommended_themes")
+        if recommended and script.theme not in recommended:
+            res.warnings.append(f"Theme '{script.theme}' is not among the recommended themes for "
+                                f"'{script.type}' prayers: {', '.join(recommended)}.")
+
+    est = script.estimated_narration_seconds(words_per_minute, *pauses) + fixed_seconds
+    if min_seconds and est < min_seconds:
+        res.warnings.append(f"Estimated video length {est:.0f}s is below the {min_seconds:.0f}s minimum for "
+                            f"'{script.type}'. Do not pad: write more content or change the type.")
     if max_seconds and est > max_seconds:
-        res.warnings.append(f"Estimated narration {est:.0f}s exceeds the {max_seconds:.0f}s maximum.")
+        res.warnings.append(f"Estimated video length {est:.0f}s exceeds the {max_seconds:.0f}s maximum for "
+                            f"'{script.type}'. Shorten the script or change the type.")
     if script.review_status != "approved":
         res.warnings.append("Script has not been approved by a human reviewer yet.")
     return res
+
+
+_PAUSE_MARKERS = re.compile(r"\.{4,}|…{2,}|\[\s*pause\s*\]|\[\s*pausa\s*\]|<\s*break", re.IGNORECASE)
+
+
+def padding_problems(script: PrayerScript) -> list[str]:
+    """Repeated sentences or artificial pause markers used to stretch a video."""
+    problems = []
+    seen: dict[str, str] = {}
+    for section in script.sections():
+        if _PAUSE_MARKERS.search(section.text):
+            problems.append(f"Artificial pause marker in {section.kind}: {section.text[:60]!r}. "
+                            "Pauses come from the narration pacing, not from the text.")
+        for sentence in split_sentences(section.text):
+            key = normalize(sentence).strip()
+            if len(key.split()) < 3:
+                continue  # "Amen." or "Thank you." may legitimately repeat
+            if key in seen:
+                problems.append(f"Repeated sentence ({seen[key]} and {section.kind}): {sentence!r}. "
+                                "Do not repeat text to reach a duration.")
+            seen.setdefault(key, section.kind)
+    return problems
+
+
+def validate_with_settings(script: PrayerScript, settings: Any) -> ValidationResult:
+    """validate_script with the type, pacing and platforms from the loaded settings."""
+    v, voice = settings["video"], settings["voice"]
+    type_cfg = settings.prayer_type(script.type) if script.type in PRAYER_TYPES else None
+    fixed = v["lead_in_seconds"] + v["outro_seconds"]
+    return validate_script(script, settings.themes, settings.language(script.language)["words_per_minute"],
+                           type_cfg=type_cfg, fixed_seconds=fixed,
+                           pauses=(voice["pause_between_sentences_seconds"],
+                                   voice["pause_between_sections_seconds"]),
+                           platforms=settings.platforms.get("platforms", {}).keys())
+
+
+def estimated_video_seconds(script: PrayerScript, settings: Any) -> float:
+    v, voice = settings["video"], settings["voice"]
+    return (script.estimated_narration_seconds(settings.language(script.language)["words_per_minute"],
+                                               voice["pause_between_sentences_seconds"],
+                                               voice["pause_between_sections_seconds"])
+            + v["lead_in_seconds"] + v["outro_seconds"])
 
 
 def iter_history(dirs: Iterable[Path], language: str) -> Iterable[tuple[Path, PrayerScript]]:
@@ -313,10 +412,29 @@ class ScriptProvider:
         raise NotImplementedError
 
 
+def pair_by_topic(scripts: Iterable[tuple[Path, PrayerScript]]) -> dict[str, dict[str, Path]]:
+    """Group scripts so one topic (date + type + theme) maps to its language versions."""
+    topics: dict[str, dict[str, Path]] = {}
+    for path, script in scripts:
+        topics.setdefault(script.topic_key, {})[script.language] = path
+    return topics
+
+
+def literal_translation_suspects(a: PrayerScript, b: PrayerScript) -> list[str]:
+    """Cheap signals that one language version was translated line by line from the other."""
+    notes = []
+    if len(a.prayer) == len(b.prayer) and len(a.prayer) > 2:
+        ratios = [len(x.split()) / max(len(y.split()), 1) for x, y in zip(a.prayer, b.prayer)]
+        if all(0.85 <= r <= 1.2 for r in ratios):
+            notes.append("Same number of paragraphs with nearly identical lengths; make sure each version "
+                         "was written for its own audience, not translated line by line.")
+    return notes
+
+
 class CuratedScriptProvider(ScriptProvider):
     """Uses scripts written and reviewed in advance, stored in a queue folder.
 
-    Files are named ``<date>_<lang>_<theme>.json``. This keeps a human in the loop
+    Files are named ``<date>_<lang>_<theme>.json`` (the prayer type is read from the file). This keeps a human in the loop
     and needs no paid API. An LLM provider can be added later.
     """
 

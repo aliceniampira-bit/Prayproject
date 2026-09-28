@@ -1,6 +1,7 @@
 {
   "date": "2026-10-01",
   "language": "en",
+  "type": "full",
   "theme": "gratitude",
   "title": "A Morning Thank You",
   "hook": "Before the day gets loud, take one breath and give thanks.",
@@ -22,7 +23,7 @@
     "Let my gratitude become something I do, not just something I feel. Make me patient, generous, and present today. Amen."
   ],
   "closing": "What is one thing you are thankful for today? Carry it with you.",
-  "tiktok_description": "A short prayer of gratitude to start your day. 🙏 Save it for the mornings you need the reminder.",
+  "description": "A short prayer of gratitude to start your day. 🙏 Save it for the mornings you need the reminder.",
   "hashtags": [
     "#prayer",
     "#dailyprayer",
