@@ -38,7 +38,7 @@
       "mode": "word_groups",
       "max_words_per_cue": 3,
       "max_lines": 1,
-      "uppercase": true,
+      "uppercase": false,
       "max_chars_per_second": 22,
       "min_cue_seconds": 0.35
     }
@@ -53,45 +53,67 @@
     },
     "overlay_opacity": 0.14,
     "fonts": {
-      "body": {
-        "file": "Cinzel-Regular.ttf",
+      "title": {
+        "file": "APompadourBold.otf",
         "fallbacks": [
-          "Marcellus-Regular.ttf",
-          "DejaVuSerif.ttf",
-          "georgia.ttf",
-          "Georgia.ttf",
-          "FreeSerif.ttf"
+          "A Pompadour Bold.otf",
+          "APompadour-Bold.otf",
+          "APompadourBoldSample.otf",
+          "03_APompadourBoldSample.otf",
+          "Jost-Bold.ttf",
+          "DejaVuSans-Bold.ttf",
+          "arialbd.ttf",
+          "Arial Bold.ttf"
+        ]
+      },
+      "body": {
+        "file": "APompadourText.otf",
+        "fallbacks": [
+          "A Pompadour Text.otf",
+          "APompadour-Text.otf",
+          "APompadourTextSample.otf",
+          "02_APompadourTextSample.otf",
+          "Jost-Regular.ttf",
+          "DejaVuSans.ttf",
+          "arial.ttf",
+          "Arial.ttf"
         ]
       },
       "verse": {
-        "file": "Cinzel-Regular.ttf",
+        "file": "APompadourText.otf",
         "fallbacks": [
-          "Marcellus-Regular.ttf",
-          "DejaVuSerif.ttf",
-          "georgia.ttf",
-          "Georgia.ttf",
-          "FreeSerif.ttf"
+          "A Pompadour Text.otf",
+          "APompadour-Text.otf",
+          "APompadourTextSample.otf",
+          "02_APompadourTextSample.otf",
+          "Jost-Regular.ttf",
+          "DejaVuSans.ttf",
+          "arial.ttf",
+          "Arial.ttf"
         ]
       },
       "brand": {
-        "file": "Cinzel-Regular.ttf",
+        "file": "APompadourText.otf",
         "fallbacks": [
-          "Marcellus-Regular.ttf",
-          "DejaVuSerif.ttf",
-          "georgia.ttf",
-          "Georgia.ttf",
-          "FreeSerif.ttf"
+          "A Pompadour Text.otf",
+          "APompadour-Text.otf",
+          "APompadourTextSample.otf",
+          "02_APompadourTextSample.otf",
+          "Jost-Regular.ttf",
+          "DejaVuSans.ttf",
+          "arial.ttf",
+          "Arial.ttf"
         ]
       }
     },
     "sizes": {
-      "subtitle": 64,
-      "verse": 64,
+      "subtitle": 74,
+      "verse": 74,
       "brand": 34
     },
     "outline_px": 0,
     "shadow_px": 3,
-    "text_spacing": 2,
+    "text_spacing": 1,
     "layout": {
       "words_center_y": 980,
       "brand_center_y": 1330

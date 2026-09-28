@@ -18,7 +18,8 @@ def test_preset_overrides_settings_and_style():
     s = load_settings()
     assert s["preset"] == "twilight_words"
     assert s["video"]["transition"] == "cut" and s["subtitles"]["mode"] == "word_groups"
-    assert s.style["fonts"]["body"]["file"] == "Cinzel-Regular.ttf"
+    assert s.style["fonts"]["body"]["file"] == "APompadourText.otf"
+    assert "Jost-Regular.ttf" in s.style["fonts"]["body"]["fallbacks"]
     base = load_settings(overrides={"preset": None})
     assert base["video"].get("transition") is None
 

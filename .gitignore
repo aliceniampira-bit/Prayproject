@@ -28,6 +28,9 @@ assets/fonts/*
 # OFL fonts may be redistributed together with their license
 !assets/fonts/Cinzel-Regular.ttf
 !assets/fonts/Cinzel-OFL.txt
+!assets/fonts/Jost-Regular.ttf
+!assets/fonts/Jost-Bold.ttf
+!assets/fonts/Jost-OFL.txt
 
 # OS / editors
 .DS_Store

@@ -11,3 +11,16 @@ sistema (DejaVu, Georgia/Arial…) y el informe de calidad lo indica.
 
 El formato `twilight_words` usa **Cinzel** (incluida en esta carpeta con su licencia `Cinzel-OFL.txt`,
 descargada del repositorio oficial de Google Fonts).
+
+## Tipografía del formato `twilight_words`: A Pompadour
+
+El formato usa **A Pompadour** (Text para el texto y Bold para los títulos). Es una fuente
+**comercial**: para usarla en los videos de la cuenta necesitas la licencia de escritorio o de video
+del distribuidor. Los archivos *Sample* suelen ser versiones de prueba con caracteres limitados.
+
+Copia aquí tus archivos con licencia con uno de estos nombres (no se suben a git):
+`APompadourText.otf` y `APompadourBold.otf`.
+
+Hasta entonces se usa **Jost** (licencia OFL, libre también para uso comercial), una geométrica muy
+parecida: `Jost-Regular.ttf` (peso 460) y `Jost-Bold.ttf` (peso 640), instanciadas desde la fuente
+variable oficial de Google Fonts para igualar el grosor de A Pompadour. Licencia: `Jost-OFL.txt`.
