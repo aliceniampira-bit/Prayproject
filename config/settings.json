@@ -65,7 +65,7 @@
         "sample_rate": 44100,
         "timeout": 60,
         "max_retries": 3,
-        "commercial_use_confirmed": false
+        "commercial_use_confirmed": true
       }
     },
     "sample_rate": 48000,
