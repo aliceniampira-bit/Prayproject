@@ -71,13 +71,16 @@ def load_settings(config_dir: Path | None = None, overrides: dict[str, Any] | No
     load_dotenv_if_available()
     cdir = config_dir or CONFIG_DIR
     data = _load_json(cdir / "settings.json")
+    style = _load_json(cdir / "visual_style.json")
+    preset_name = (overrides or {}).get("preset", data.get("preset"))
+    if preset_name:
+        # A preset is a named format: it overrides parts of settings.json and visual_style.json.
+        preset = _load_json(cdir / "presets" / f"{preset_name}.json")
+        _deep_update(data, preset.get("settings", {}))
+        _deep_update(style, preset.get("style", {}))
     if overrides:
         _deep_update(data, overrides)
-    return Settings(
-        data=data,
-        style=_load_json(cdir / "visual_style.json"),
-        themes=_load_json(cdir / "themes.json"),
-    )
+    return Settings(data=data, style=style, themes=_load_json(cdir / "themes.json"))
 
 
 def _deep_update(base: dict[str, Any], extra: dict[str, Any]) -> None:

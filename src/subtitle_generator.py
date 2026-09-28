@@ -242,7 +242,12 @@ class TitleCards:
     title_seconds: float
     outro_start: float
     total: float
-    extra_styles: dict = field(default_factory=dict)
+    show_closing: bool = True
+    brand: str | None = None
+
+    @property
+    def show_title(self) -> bool:
+        return self.title_seconds > 0 and bool(self.title)
 
 
 def write_ass(cues: list[Cue], cards: TitleCards, fonts: dict[str, ResolvedFont],
@@ -251,23 +256,28 @@ def write_ass(cues: list[Cue], cards: TitleCards, fonts: dict[str, ResolvedFont]
     W, H = settings["video"]["width"], settings["video"]["height"]
     c, sz, safe, lay = st["colors"], st["sizes"], st["safe_zone"], st["layout"]
     outline, shadow = st["outline_px"], st["shadow_px"]
+    spacing = st.get("text_spacing", 0)
+    word_mode = settings["subtitles"].get("mode") == "word_groups"
+    cue_fade = st.get("cue_fade_in_ms", 120)
 
     def style(name: str, font: ResolvedFont, size: int, color: str, align: int, margin_v: int,
-              italic: bool | None = None) -> str:
+              italic: bool | None = None, space: float = 0) -> str:
         italic = font.italic if italic is None else italic
         return (f"Style: {name},{font.family},{size},{ass_color(color)},{ass_color(color)},"
                 f"{ass_color(c['outline'])},{ass_color(c['shadow'], 0.45)},{-1 if font.bold else 0},"
-                f"{-1 if italic else 0},0,0,100,100,0,0,1,{outline},{shadow},{align},"
+                f"{-1 if italic else 0},0,0,100,100,{space},0,1,{outline},{shadow},{align},"
                 f"{safe['left']},{safe['right']},{margin_v},1")
 
     sub_margin = lay["subtitle_bottom_margin"]
+    brand_font = fonts.get("brand", fonts["body"])
     styles = [
-        style("Sub", fonts["body"], sz["subtitle"], c["text"], 2, sub_margin),
-        style("Verse", fonts["verse"], sz["verse"], c["verse_text"], 2, sub_margin, italic=True),
+        style("Sub", fonts["body"], sz["subtitle"], c["text"], 2, sub_margin, space=spacing),
+        style("Verse", fonts["verse"], sz["verse"], c["verse_text"], 2, sub_margin, italic=True, space=spacing),
         style("Ref", fonts["body"], sz["verse_reference"], c["accent"], 2, sub_margin),
         style("Title", fonts["title"], sz["title"], c["text"], 5, 0),
         style("Name", fonts["title"], sz["closing_name"], c["accent"], 5, 0),
         style("Tagline", fonts["body"], sz["closing_tagline"], c["text"], 5, 0),
+        style("Brand", brand_font, sz.get("brand", 34), c["accent"], 5, 0, space=1),
     ]
     header = [
         "[Script Info]", "ScriptType: v4.00+", f"PlayResX: {W}", f"PlayResY: {H}",
@@ -285,42 +295,118 @@ def write_ass(cues: list[Cue], cards: TitleCards, fonts: dict[str, ResolvedFont]
     def ev(start: float, end: float, style_name: str, text: str, layer: int = 0) -> None:
         events.append(f"Dialogue: {layer},{_ass_time(start)},{_ass_time(end)},{style_name},,0,0,0,,{text}")
 
-    title_end = min(cards.title_seconds, cards.outro_start)
-    ev(0.2, title_end, "Title", f"{{\\fad(500,600)\\pos({cx},{lay['title_center_y']})}}"
-       + "\\N".join(_ass_escape(line) for line in cards.title))
+    if cards.show_title:
+        title_end = min(cards.title_seconds, cards.outro_start)
+        ev(0.2, title_end, "Title", f"{{\\fad(500,600)\\pos({cx},{lay['title_center_y']})}}"
+           + "\\N".join(_ass_escape(line) for line in cards.title))
 
-    verse_lines_h = sz["verse"] * 1.25 * settings["subtitles"]["max_lines"]
-    ref_y = H - sub_margin - verse_lines_h - 24
-    verse_cues = [q for q in cues if q.kind == "verse"]
+    words_y = lay.get("words_center_y", 960)
+    placement = f"\\pos({cx},{words_y})\\an5" if word_mode else ""
     for cue in cues:
         style_name = "Verse" if cue.kind == "verse" else "Sub"
         text = "\\N".join(_ass_escape(line) for line in cue.lines)
-        ev(cue.start, cue.end, style_name, "{\\fad(120,120)}" + text)
-    if verse_cues:
-        ref = verse_cues[0].reference or ""
-        ev(verse_cues[0].start, verse_cues[-1].end, "Ref",
-           f"{{\\fad(250,250)\\pos({cx},{int(ref_y)})}}— {_ass_escape(ref)}")
+        fade = f"\\fad({cue_fade},{80 if word_mode else 120})"
+        ev(cue.start, cue.end, style_name, "{" + fade + placement + "}" + text)
 
-    y = lay["closing_center_y"]
-    ev(cards.outro_start, cards.total, "Name", f"{{\\fad(600,0)\\pos({W // 2},{y})}}{_ass_escape(cards.account_name)}")
-    ev(cards.outro_start + 0.3, cards.total, "Tagline",
-       f"{{\\fad(600,0)\\pos({W // 2},{y + sz['closing_name'] + 30})}}{_ass_escape(cards.tagline)}")
-    if cards.handle:
-        ev(cards.outro_start + 0.5, cards.total, "Tagline",
-           f"{{\\fad(600,0)\\pos({W // 2},{y + sz['closing_name'] + sz['closing_tagline'] + 60})}}"
-           f"{_ass_escape(cards.handle)}")
+    verse_cues = [q for q in cues if q.kind == "verse"]
+    if verse_cues:
+        if word_mode:
+            ref_y = words_y + sz["verse"] + 40
+        else:
+            ref_y = H - sub_margin - sz["verse"] * 1.25 * settings["subtitles"]["max_lines"] - 24
+        ev(verse_cues[0].start, verse_cues[-1].end, "Ref",
+           f"{{\\fad(250,250)\\an5\\pos({cx},{int(ref_y)})}}— {_ass_escape(verse_cues[0].reference or '')}")
+
+    if cards.brand:
+        ev(0.0, cards.total, "Brand", f"{{\\fad(800,800)\\pos({cx},{lay.get('brand_center_y', 1330)})}}"
+           + _ass_escape(cards.brand))
+
+    if cards.show_closing:
+        y = lay["closing_center_y"]
+        ev(cards.outro_start, cards.total, "Name",
+           f"{{\\fad(600,0)\\pos({W // 2},{y})}}{_ass_escape(cards.account_name)}")
+        ev(cards.outro_start + 0.3, cards.total, "Tagline",
+           f"{{\\fad(600,0)\\pos({W // 2},{y + sz['closing_name'] + 30})}}{_ass_escape(cards.tagline)}")
+        if cards.handle:
+            ev(cards.outro_start + 0.5, cards.total, "Tagline",
+               f"{{\\fad(600,0)\\pos({W // 2},{y + sz['closing_name'] + sz['closing_tagline'] + 60})}}"
+               f"{_ass_escape(cards.handle)}")
 
     path.write_text("\n".join(header + events) + "\n", encoding="utf-8")
     return path
 
 
+# ---- word-group captions (short centred phrases synced to the voice) ---------
+
+def group_words(sentence: str, layout: SubtitleLayout, kind: str = "prayer") -> list[list[str]]:
+    """Split a sentence into 1-3 word groups with the lowest total cost.
+
+    Costs favour two-word groups, keep punctuation at group ends, and avoid
+    ending a group on an article, preposition or unstressed pronoun.
+    """
+    words = sentence.split()
+    n = len(words)
+    inf = float("inf")
+    best = [0.0] + [inf] * n
+    back = [0] * (n + 1)
+    for end in range(1, n + 1):
+        for size in range(1, min(layout.max_words, end) + 1):
+            start = end - size
+            group = words[start:end]
+            text = " ".join(group)
+            if not layout.fits(text, kind):
+                continue
+            cost = {1: 1.0, 2: 0.0, 3: 0.5}.get(size, 2.0)
+            if size == 1 and len(group[0]) >= 8:
+                cost = 0.3
+            if size == 3 and len(text) > 18:
+                cost += 1.0
+            if any(w[-1:] in ",;:.!?…" for w in group[:-1]):
+                cost += 6.0  # punctuation inside a group reads badly
+            if end < n and is_weak_ending(group[-1], layout.language):
+                cost += 3.0
+            if best[start] + cost < best[end]:
+                best[end], back[end] = best[start] + cost, start
+    if best[n] == inf:
+        raise ValueError(f"Cannot fit caption words on screen: {sentence!r}")
+    groups, end = [], n
+    while end > 0:
+        groups.insert(0, words[back[end]:end])
+        end = back[end]
+    return groups
+
+
+def build_word_cues(segments: list[NarrationSegment], layout: SubtitleLayout, offset: float = 0.0,
+                    uppercase: bool = False) -> list[Cue]:
+    cues: list[Cue] = []
+    for seg in segments:
+        groups = group_words(seg.text, layout, seg.kind)
+        # Weight by characters, plus a little for the micro-pause after punctuation.
+        weights = [len(" ".join(g)) + 3 + (4 if g[-1][-1:] in ",;:" else 0) for g in groups]
+        total = sum(weights)
+        t = seg.start
+        for g, w in zip(groups, weights):
+            dur = (seg.end - seg.start) * w / total
+            text = " ".join(g)
+            cues.append(Cue(round(t + offset, 3), round(t + dur + offset, 3),
+                            [text.upper() if uppercase else text], seg.kind, seg.reference))
+            t += dur
+    return cues
+
+
 def make_layout(settings: Settings, fonts: dict[str, ResolvedFont], language: str = "en") -> SubtitleLayout:
     st, sub = settings.style, settings["subtitles"]
     usable = settings["video"]["width"] - st["safe_zone"]["left"] - st["safe_zone"]["right"]
+    spacing = st.get("text_spacing", 0)
+    upper = sub.get("uppercase", False)
     body = TextMeasurer(fonts["body"].path, st["sizes"]["subtitle"], st["outline_px"])
     verse = TextMeasurer(fonts["verse"].path, st["sizes"]["verse"], st["outline_px"])
+
+    def measure_with(m: TextMeasurer) -> Callable[[str], float]:
+        return lambda text: m.width(text.upper() if upper else text) + spacing * len(text)
+
     return SubtitleLayout(usable * sub["width_safety_factor"], sub["max_lines"], sub["max_words_per_cue"],
-                          body.width, verse.width, language)
+                          measure_with(body), measure_with(verse), language)
 
 
 def wrap_title(text: str, font: ResolvedFont, settings: Settings, max_lines: int = 3) -> list[str]:

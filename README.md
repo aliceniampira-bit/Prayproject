@@ -6,6 +6,14 @@ Sistema automatizado para producir cada día dos videos verticales (inglés y es
 
 ---
 
+## Formato actual: `twilight_words`
+
+Inspirado en el video de referencia que analizamos: paisajes al atardecer con cortes secos cada ~5,5 s, texto centrado de 1–3 palabras en Cinzel sincronizado con la voz, la marca fija y sin tarjetas. Detalles y medidas en [`docs/FORMATO_TWILIGHT_WORDS.md`](docs/FORMATO_TWILIGHT_WORDS.md). Guiones de muestra en `data/scripts/twilight/`.
+
+```bash
+python -m src.main demo --script data/scripts/twilight/2026-10-04_es_new_beginnings.json
+```
+
 ## 1. Requisitos
 
 | Herramienta | Versión probada | Para qué |

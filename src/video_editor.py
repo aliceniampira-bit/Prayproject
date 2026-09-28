@@ -62,9 +62,16 @@ def render_video(clips: list[Clip], voice_stem: Path, music_bed: Path | None, as
         raise ValueError("At least one clip is required.")
     v, st, a = settings["video"], settings.style, settings["audio"]
     T = timeline.total
-    n = len(clips)
-    xf = min(v["crossfade_seconds"], T / (2 * n)) if n > 1 else 0.0
+    hard_cuts = v.get("transition", "crossfade") == "cut"
+    if hard_cuts:
+        # Short shots with hard cuts; reuse clips (from a later point) if there are too few.
+        n = max(1, round(T / v.get("target_clip_seconds", 5.5)))
+        xf = 0.0
+    else:
+        n = len(clips)
+        xf = min(v["crossfade_seconds"], T / (2 * n)) if n > 1 else 0.0
     seg_len = (T + (n - 1) * xf) / n
+    shots = [(clips[i % len(clips)], (i // len(clips)) * seg_len) for i in range(n)]
 
     # libass reads fonts from a folder next to the .ass file; paths stay relative
     # to the working directory, which avoids Windows drive-letter escaping issues.
@@ -77,8 +84,9 @@ def render_video(clips: list[Clip], voice_stem: Path, music_bed: Path | None, as
         shutil.copy2(ass_file, local_ass)
 
     args: list[str] = []
-    for clip in clips:
-        args += ["-stream_loop", "-1", "-t", f"{seg_len + 0.5:.3f}", "-i", str(clip.path.resolve())]
+    for clip, start in shots:
+        args += ["-stream_loop", "-1", "-ss", f"{start:.3f}", "-t", f"{seg_len + 0.5:.3f}",
+                 "-i", str(clip.path.resolve())]
     voice_idx = n
     args += ["-i", str(voice_stem.resolve())]
     music_idx = None
@@ -91,17 +99,22 @@ def render_video(clips: list[Clip], voice_stem: Path, music_bed: Path | None, as
         logo_idx = n + (2 if music_bed else 1)
         args += ["-i", str(logo_path.resolve())]
 
-    parts = [_clip_filter(i, c, seg_len, settings) for i, c in enumerate(clips)]
-    last = "c0"
-    for i in range(1, n):
-        offset = i * (seg_len - xf)
-        parts.append(f"[{last}][c{i}]xfade=transition=fade:duration={xf:.3f}:offset={offset:.3f}[x{i}]")
-        last = f"x{i}"
+    parts = [_clip_filter(i, c, seg_len, settings) for i, (c, _) in enumerate(shots)]
+    if hard_cuts or n == 1:
+        parts.append("".join(f"[c{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0[joined]")
+        last = "joined"
+    else:
+        last = "c0"
+        for i in range(1, n):
+            offset = i * (seg_len - xf)
+            parts.append(f"[{last}][c{i}]xfade=transition=fade:duration={xf:.3f}:offset={offset:.3f}[x{i}]")
+            last = f"x{i}"
     overlay_hex = st["colors"]["overlay"].lstrip("#")
     fade_in, fade_out = st["fade_in_seconds"], st["fade_out_seconds"]
     parts.append(
         f"[{last}]trim=0:{T:.3f},drawbox=x=0:y=0:w=iw:h=ih:color=0x{overlay_hex}@{st['overlay_opacity']}:t=fill,"
-        f"subtitles=subtitles.ass:fontsdir=fonts,"
+        + ("vignette=angle=PI/4.5," if st.get("vignette") else "")
+        + "subtitles=subtitles.ass:fontsdir=fonts,"
         f"fade=t=in:st=0:d={fade_in},fade=t=out:st={T - fade_out:.3f}:d={fade_out}[vtxt]"
     )
     vout = "vtxt"
@@ -134,6 +147,7 @@ def render_video(clips: list[Clip], voice_stem: Path, music_bed: Path | None, as
         "-c:a", "aac", "-b:a", v["audio_bitrate"], "-ar", "48000",
         "-movflags", "+faststart", str(out_path.resolve()),
     ]
-    log.info("Rendering %.1fs video from %d clips", T, n)
+    log.info("Rendering %.1fs video: %d shots from %d clips (%s)", T, n, len(clips),
+             "hard cuts" if hard_cuts else "crossfades")
     run_ffmpeg(args, cwd=work_dir)
     return out_path

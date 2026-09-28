@@ -14,7 +14,7 @@ from .music_manager import build_music_bed, load_library, select_track
 from .quality_control import QCReport, run_qc
 from .script_generator import PrayerScript, find_similar, iter_history, validate_script
 from .style import TextMeasurer, resolve_font
-from .subtitle_generator import (TitleCards, build_cues, make_layout, read_srt, wrap_title, write_ass,
+from .subtitle_generator import (TitleCards, build_cues, build_word_cues, make_layout, read_srt, wrap_title, write_ass,
                                  write_srt)
 from .video_editor import Timeline, build_voice_stem, render_video
 from .video_sources import VideoSource
@@ -86,19 +86,27 @@ def produce(script_path: Path, settings: Settings, clip_source: VideoSource, *,
     if srt_override:
         cues = read_srt(srt_override)
         warnings.append(f"Subtítulos tomados de un SRT corregido manualmente: {srt_override}")
+    elif settings["subtitles"].get("mode") == "word_groups":
+        cues = build_word_cues(narration.segments, layout, offset=timeline.lead_in,
+                               uppercase=settings["subtitles"].get("uppercase", False))
     else:
         cues = build_cues(narration.segments, layout, offset=timeline.lead_in,
                           min_cue=settings["subtitles"]["min_cue_seconds"])
     write_srt(cues, work / "subtitles.srt")
-    title_lines = wrap_title(script.title, fonts["title"], settings)
+    show_title = v["title_card_seconds"] > 0
+    title_lines = wrap_title(script.title, fonts["title"], settings) if show_title else []
     cards = TitleCards(title_lines, settings["project"]["account_name"], lang_cfg["closing_tagline"],
                        settings["project"].get("handle", ""), v["title_card_seconds"],
-                       timeline.outro_start, timeline.total)
+                       timeline.outro_start, timeline.total, show_closing=v.get("closing_card", True),
+                       brand=settings.style.get("brand_text"))
     ass = write_ass(cues, cards, fonts, settings, work / "subtitles.ass")
-    card_texts = [("título", fonts["title"], "title", line) for line in title_lines] + [
-        ("nombre de la cuenta", fonts["title"], "closing_name", cards.account_name),
-        ("lema de cierre", fonts["body"], "closing_tagline", cards.tagline),
-        ("usuario", fonts["body"], "closing_tagline", cards.handle)]
+    card_texts = [("título", fonts["title"], "title", line) for line in title_lines]
+    if cards.show_closing:
+        card_texts += [("nombre de la cuenta", fonts["title"], "closing_name", cards.account_name),
+                       ("lema de cierre", fonts["body"], "closing_tagline", cards.tagline),
+                       ("usuario", fonts["body"], "closing_tagline", cards.handle)]
+    if cards.brand:
+        card_texts.append(("marca", fonts.get("brand", fonts["body"]), "brand", cards.brand))
     usable = v["width"] - settings.style["safe_zone"]["left"] - settings.style["safe_zone"]["right"]
     too_wide_cards = [label for label, font, size_key, text in card_texts
                       if TextMeasurer(font.path, settings.style["sizes"][size_key],

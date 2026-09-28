@@ -1,0 +1,127 @@
+{
+  "_comment": "Formato inspirado en el video de referencia: paisajes al atardecer con cortes secos, texto centrado de 1-3 palabras sincronizado con la voz, marca fija, sin tarjetas de título ni de cierre. Solo sobrescribe valores de settings.json y visual_style.json.",
+  "settings": {
+    "video": {
+      "min_duration_seconds": 45,
+      "max_duration_seconds": 70,
+      "lead_in_seconds": 0.8,
+      "outro_seconds": 2.0,
+      "transition": "cut",
+      "target_clip_seconds": 5.5,
+      "crossfade_seconds": 0.0,
+      "clips_per_video": 10,
+      "title_card_seconds": 0,
+      "closing_card": false
+    },
+    "languages": {
+      "en": {
+        "words_per_minute": 150
+      },
+      "es": {
+        "words_per_minute": 150
+      }
+    },
+    "voice": {
+      "pause_between_sentences_seconds": 0.35,
+      "pause_between_sections_seconds": 0.7,
+      "voices": {
+        "espeak_local": {
+          "speed_wpm": 145
+        }
+      }
+    },
+    "audio": {
+      "music_below_voice_db": 13.0,
+      "min_voice_over_music_db": 9.0
+    },
+    "subtitles": {
+      "mode": "word_groups",
+      "max_words_per_cue": 3,
+      "max_lines": 1,
+      "uppercase": true,
+      "max_chars_per_second": 22,
+      "min_cue_seconds": 0.35
+    }
+  },
+  "style": {
+    "colors": {
+      "text": "#F4EBDD",
+      "verse_text": "#F4EBDD",
+      "accent": "#E9D9C0",
+      "outline": "#000000",
+      "overlay": "#05070A"
+    },
+    "overlay_opacity": 0.14,
+    "fonts": {
+      "body": {
+        "file": "Cinzel-Regular.ttf",
+        "fallbacks": [
+          "Marcellus-Regular.ttf",
+          "DejaVuSerif.ttf",
+          "georgia.ttf",
+          "Georgia.ttf",
+          "FreeSerif.ttf"
+        ]
+      },
+      "verse": {
+        "file": "Cinzel-Regular.ttf",
+        "fallbacks": [
+          "Marcellus-Regular.ttf",
+          "DejaVuSerif.ttf",
+          "georgia.ttf",
+          "Georgia.ttf",
+          "FreeSerif.ttf"
+        ]
+      },
+      "brand": {
+        "file": "Cinzel-Regular.ttf",
+        "fallbacks": [
+          "Marcellus-Regular.ttf",
+          "DejaVuSerif.ttf",
+          "georgia.ttf",
+          "Georgia.ttf",
+          "FreeSerif.ttf"
+        ]
+      }
+    },
+    "sizes": {
+      "subtitle": 64,
+      "verse": 64,
+      "brand": 34
+    },
+    "outline_px": 0,
+    "shadow_px": 3,
+    "text_spacing": 2,
+    "layout": {
+      "words_center_y": 980,
+      "brand_center_y": 1330
+    },
+    "brand_text": "Daily Prayer Studio",
+    "color_grade": {
+      "brightness": -0.03,
+      "contrast": 1.08,
+      "saturation": 1.08,
+      "gamma": 0.97,
+      "warmth": 0.05
+    },
+    "vignette": true,
+    "fade_in_seconds": 0.5,
+    "fade_out_seconds": 1.2,
+    "cue_fade_in_ms": 180
+  },
+  "visual_queries": [
+    "highway sunset drone",
+    "empty road dusk",
+    "car driving sunset road",
+    "wet road after rain",
+    "park street lamp night",
+    "mountain sunset city lights",
+    "orange sky mountains silhouette",
+    "tree silhouette sunset",
+    "wheat field golden hour",
+    "misty forest valley aerial",
+    "dark clouds sunset timelapse",
+    "winding road mountains fog"
+  ],
+  "_visual_notes": "Planos amplios y contemplativos al atardecer o de noche, sin personas identificables; carreteras y caminos como motivo de viaje; cielos naranjas o nublados; movimiento lento (dron, conducción, timelapse)."
+}

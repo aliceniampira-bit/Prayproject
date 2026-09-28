@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-04",
+  "language": "es",
+  "theme": "new_beginnings",
+  "title": "Una página en blanco",
+  "hook": "Señor de mi vida, antes de mirar el teléfono quiero mirarte a ti.",
+  "prayer": [
+    "Gracias por el descanso de esta noche y por la oportunidad de empezar otra vez. Lo que ayer quedó a medias no define quién soy hoy.",
+    "Pongo en tus manos mis planes, mis pendientes y también mis miedos. Tú ves el camino completo cuando yo solo veo el siguiente paso.",
+    "Guía mis decisiones, cuida mis palabras y llena mi corazón de paciencia con cada persona que encuentre hoy. Que mi trabajo sea honesto y mi trato, amable.",
+    "No quiero atravesar este día a la carrera y sin ti. Camina conmigo en cada hora."
+  ],
+  "closing": "En el nombre de Jesús, amén.",
+  "tiktok_description": "Empieza tu mañana aquí, antes que nada. 🌅 Escribe amén si esta es tu oración de hoy.",
+  "hashtags": [
+    "#oraciondelamañana",
+    "#oraciondiaria",
+    "#oracion",
+    "#nuevoscomienzos",
+    "#fe",
+    "#Dios",
+    "#cristianos"
+  ],
+  "bible_verse": null,
+  "review": {
+    "status": "pending"
+  },
+  "generator": "claude-code (curated, twilight_words format)",
+  "format": "twilight_words"
+}

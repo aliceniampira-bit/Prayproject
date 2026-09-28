@@ -25,6 +25,9 @@ assets/clips/*
 !assets/clips/README.md
 assets/fonts/*
 !assets/fonts/README.md
+# OFL fonts may be redistributed together with their license
+!assets/fonts/Cinzel-Regular.ttf
+!assets/fonts/Cinzel-OFL.txt
 
 # OS / editors
 .DS_Store

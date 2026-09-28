@@ -8,3 +8,6 @@ La plantilla (`config/visual_style.json`) busca primero aquí:
 Ambas se distribuyen con licencia SIL Open Font License en https://fonts.google.com
 (descárgalas y copia los `.ttf` en esta carpeta). Si no están, se usan fuentes del
 sistema (DejaVu, Georgia/Arial…) y el informe de calidad lo indica.
+
+El formato `twilight_words` usa **Cinzel** (incluida en esta carpeta con su licencia `Cinzel-OFL.txt`,
+descargada del repositorio oficial de Google Fonts).
