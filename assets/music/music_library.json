@@ -1,0 +1,21 @@
+{
+  "_comment": "Registra aquí cada pista con licencia. Copia el archivo de audio a esta carpeta. Pon commercial_use_verified y tiktok_use_verified en true SOLO después de leer la licencia y comprobar que permite uso comercial en TikTok.",
+  "tracks": [
+    {
+      "_example": true,
+      "id": "example-track",
+      "file": "example-track.mp3",
+      "title": "Título de la pista",
+      "artist": "Autor",
+      "source_url": "https://…/pagina-de-la-pista",
+      "license": "Nombre exacto de la licencia",
+      "license_url": "https://…/licencia",
+      "instrumental": true,
+      "commercial_use_verified": false,
+      "tiktok_use_verified": false,
+      "restrictions": "Ej.: requiere atribución en la descripción; no permite Content ID; etc.",
+      "verified_by": null,
+      "verified_on": null
+    }
+  ]
+}

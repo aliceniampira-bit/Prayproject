@@ -1,0 +1,80 @@
+{
+  "_comment": "Plantilla gráfica. Colores en formato #RRGGBB. Coordenadas en píxeles sobre un lienzo de 1080x1920.",
+  "colors": {
+    "text": "#FFF8EC",
+    "accent": "#E8C07D",
+    "outline": "#1B140E",
+    "shadow": "#000000",
+    "verse_text": "#FCEBD0",
+    "overlay": "#0E0A06"
+  },
+  "overlay_opacity": 0.28,
+  "fonts": {
+    "title": {
+      "file": "Lora-Bold.ttf",
+      "fallbacks": [
+        "DejaVuSerif-Bold.ttf",
+        "georgiab.ttf",
+        "Georgia Bold.ttf",
+        "FreeSerifBold.ttf"
+      ]
+    },
+    "body": {
+      "file": "Nunito-Bold.ttf",
+      "fallbacks": [
+        "DejaVuSans-Bold.ttf",
+        "arialbd.ttf",
+        "Arial Bold.ttf",
+        "LiberationSans-Bold.ttf",
+        "FreeSansBold.ttf"
+      ]
+    },
+    "verse": {
+      "file": "Lora-Italic.ttf",
+      "fallbacks": [
+        "DejaVuSerif-Italic.ttf",
+        "DejaVuSerif.ttf",
+        "georgiai.ttf",
+        "Georgia Italic.ttf",
+        "FreeSerifItalic.ttf"
+      ]
+    }
+  },
+  "sizes": {
+    "title": 84,
+    "subtitle": 70,
+    "verse": 64,
+    "verse_reference": 44,
+    "closing_name": 72,
+    "closing_tagline": 46
+  },
+  "outline_px": 4,
+  "shadow_px": 2,
+  "safe_zone": {
+    "_comment": "Márgenes que evitan la interfaz de TikTok: arriba (pestañas), derecha (botones), abajo (descripción y barra).",
+    "top": 250,
+    "bottom": 520,
+    "left": 90,
+    "right": 180
+  },
+  "layout": {
+    "title_center_y": 560,
+    "subtitle_bottom_margin": 560,
+    "closing_center_y": 820
+  },
+  "color_grade": {
+    "brightness": -0.02,
+    "contrast": 1.04,
+    "saturation": 0.92,
+    "gamma": 1.0,
+    "warmth": 0.04
+  },
+  "fade_in_seconds": 0.8,
+  "fade_out_seconds": 1.0,
+  "logo": {
+    "file": "logo.png",
+    "width": 150,
+    "position": "top_left",
+    "opacity": 0.85
+  }
+}

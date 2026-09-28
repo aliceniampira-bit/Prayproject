@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-02",
+  "language": "es",
+  "theme": "strength",
+  "title": "Cuando ya no puedes más",
+  "hook": "Si hoy la carga te pesa más de lo que puedes llevar, esta oración es para ti.",
+  "bible_verse": {
+    "reference": "Salmos 46:1",
+    "translation": "RV1909",
+    "text": "Dios es nuestro amparo y fortaleza, Nuestro pronto auxilio en las tribulaciones.",
+    "spoken_intro": "La Escritura nos recuerda:",
+    "verification": {
+      "status": "pending",
+      "verified_by": null,
+      "source": null,
+      "note": "Versículo citado de memoria (Reina-Valera 1909, dominio público). Cotéjalo con una edición fiable de la RV1909 antes de marcarlo como 'verified'."
+    }
+  },
+  "prayer": [
+    "Padre, tú conoces lo que estoy viviendo, incluso lo que todavía no me atrevo a decir en voz alta. Hay días en los que me faltan las fuerzas y no sé cómo seguir.",
+    "Sé tú mi fortaleza cuando la mía se acaba. Cuando el miedo hable más fuerte que la fe, recuérdame que no camino sin ti. Dame luz para el siguiente paso, aunque todavía no vea todo el camino.",
+    "Sostén también a quienes amo y están sufriendo. Y cuando esta etapa pase, permíteme mirar atrás y descubrir tu mano en cada día difícil. Amén."
+  ],
+  "closing": "Respira despacio. Hoy no tienes que cargarlo todo tú.",
+  "tiktok_description": "Para los días en que todo pesa demasiado. No estás caminando a solas. 🤍",
+  "hashtags": [
+    "#oracion",
+    "#oraciondiaria",
+    "#fortaleza",
+    "#fe",
+    "#esperanza",
+    "#Dios",
+    "#cristianos"
+  ],
+  "review": {
+    "status": "pending"
+  },
+  "generator": "claude-code (curated sample)"
+}

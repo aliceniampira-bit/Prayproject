@@ -1,0 +1,14 @@
+{
+  "gratitude":        {"en": "Gratitude",                "es": "Gratitud",                        "visual_queries": ["sunrise meadow", "golden hour field", "morning light nature"]},
+  "family_protection":{"en": "Protection of the family", "es": "Protección de la familia",        "visual_queries": ["warm home window light", "calm countryside house", "sunset hills"]},
+  "hope":             {"en": "Hope",                     "es": "Esperanza",                       "visual_queries": ["sunrise clouds", "light rays sky", "dawn horizon"]},
+  "strength":         {"en": "Strength in hard times",   "es": "Fortaleza en momentos difíciles", "visual_queries": ["mountain peak clouds", "ocean waves rocks", "storm clouds sunlight"]},
+  "inner_peace":      {"en": "Inner peace",              "es": "Paz interior",                    "visual_queries": ["calm lake reflection", "forest morning mist", "gentle waves beach"]},
+  "forgiveness":      {"en": "Forgiveness",              "es": "Perdón",                          "visual_queries": ["rain on leaves", "river flowing forest", "clearing sky after rain"]},
+  "love":             {"en": "Love",                     "es": "Amor",                            "visual_queries": ["sunset sky warm", "flowers field breeze", "candle light warm"]},
+  "faith":            {"en": "Faith",                    "es": "Fe",                              "visual_queries": ["starry night sky", "light through clouds", "mountain sunrise"]},
+  "wisdom":           {"en": "Wisdom",                   "es": "Sabiduría",                       "visual_queries": ["ancient forest", "quiet library light", "mountain valley"]},
+  "spiritual_health": {"en": "Spiritual health",         "es": "Salud espiritual",                "visual_queries": ["waterfall forest", "green forest sunlight", "spring water stream"]},
+  "new_beginnings":   {"en": "New beginnings",           "es": "Nuevos comienzos",                "visual_queries": ["sunrise timelapse", "spring blossoms", "road through mountains"]},
+  "trust_in_god":     {"en": "Trust in God",             "es": "Confianza en Dios",               "visual_queries": ["birds flying sky", "calm sea horizon", "clouds timelapse"]}
+}

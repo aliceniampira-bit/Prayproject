@@ -1,0 +1,33 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Generated media and runtime output
+output/**
+!output/**/
+!output/**/.gitkeep
+logs/*
+!logs/.gitkeep
+assets/sample/
+data/cache/
+
+# Licensed media: keep metadata in git, keep the binaries local
+assets/music/*
+!assets/music/music_library.json
+!assets/music/README.md
+assets/clips/*
+!assets/clips/README.md
+assets/fonts/*
+!assets/fonts/README.md
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

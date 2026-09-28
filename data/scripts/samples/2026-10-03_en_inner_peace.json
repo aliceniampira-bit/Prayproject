@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-03",
+  "language": "en",
+  "theme": "inner_peace",
+  "title": "Quiet My Heart",
+  "hook": "Your mind has been racing all day. Let's slow down together for a moment.",
+  "bible_verse": {
+    "reference": "John 14:27",
+    "translation": "KJV",
+    "text": "Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid.",
+    "spoken_intro": "Jesus said:",
+    "verification": {
+      "status": "pending",
+      "verified_by": null,
+      "source": null,
+      "note": "Verse quoted from memory (KJV, public domain in the US). Check it against a reliable KJV edition before setting status to 'verified'."
+    }
+  },
+  "prayer": [
+    "Lord, my thoughts are crowded and my heart is restless. I bring you the worries I keep replaying and the conversations I cannot stop rehearsing.",
+    "Quiet what is loud inside me. Where there is anxiety, plant your peace. Where there is hurry, teach me to rest in you.",
+    "I cannot control everything, and I was never meant to. So I place this day, and all its unfinished pieces, in your hands. Amen."
+  ],
+  "closing": "Stay here a moment longer. Breathe in slowly, and let his peace settle over you.",
+  "tiktok_description": "A short prayer for a restless mind. Put your worries down for a moment. 🕊️",
+  "hashtags": [
+    "#prayer",
+    "#dailyprayer",
+    "#peace",
+    "#anxiety",
+    "#faith",
+    "#christian",
+    "#jesus"
+  ],
+  "review": {
+    "status": "pending"
+  },
+  "generator": "claude-code (curated sample)"
+}

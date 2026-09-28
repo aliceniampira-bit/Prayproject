@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-02",
+  "language": "en",
+  "theme": "strength",
+  "title": "When You Feel Worn Out",
+  "hook": "If today feels heavier than you can carry, this prayer is for you.",
+  "bible_verse": {
+    "reference": "Psalm 46:1",
+    "translation": "KJV",
+    "text": "God is our refuge and strength, a very present help in trouble.",
+    "spoken_intro": "Scripture reminds us:",
+    "verification": {
+      "status": "pending",
+      "verified_by": null,
+      "source": null,
+      "note": "Verse quoted from memory (KJV, public domain in the US). Check it against a reliable KJV edition before setting status to 'verified'."
+    }
+  },
+  "prayer": [
+    "Father, you know what I am facing right now, even the parts I have not said out loud. I am tired, and some days I do not know how to keep going.",
+    "Be my strength where mine has run out. When fear speaks louder than faith, remind me I am not alone. Give me light for the next step, even if I cannot see the whole road.",
+    "Hold the ones I love who are hurting too. And when this season passes, let me look back and see your hand in every hard day. Amen."
+  ],
+  "closing": "Breathe slowly. You do not have to carry it all today.",
+  "tiktok_description": "For the days when everything feels like too much. You are not alone. 🤍",
+  "hashtags": [
+    "#prayer",
+    "#dailyprayer",
+    "#strength",
+    "#hardtimes",
+    "#faith",
+    "#hope",
+    "#christian"
+  ],
+  "review": {
+    "status": "pending"
+  },
+  "generator": "claude-code (curated sample)"
+}

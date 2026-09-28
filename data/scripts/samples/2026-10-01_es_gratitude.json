@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-01",
+  "language": "es",
+  "theme": "gratitude",
+  "title": "Gracias por este día",
+  "hook": "Antes de que empiece el ruido del día, detente un momento y da gracias.",
+  "bible_verse": {
+    "reference": "Salmos 118:24",
+    "translation": "RV1909",
+    "text": "Este es el día que hizo Jehová: Nos gozaremos y alegraremos en él.",
+    "spoken_intro": "Dice el salmista:",
+    "verification": {
+      "status": "pending",
+      "verified_by": null,
+      "source": null,
+      "note": "Versículo citado de memoria (Reina-Valera 1909, dominio público). Cotéjalo con una edición fiable de la RV1909 antes de marcarlo como 'verified'."
+    }
+  },
+  "prayer": [
+    "Señor, gracias por despertar hoy. Gracias por el aire que respiro, por la luz de esta mañana y por las personas que pusiste en mi camino. Nada de esto lo he ganado; todo me lo das por amor.",
+    "Perdóname cuando vivo con prisa y solo miro lo que me falta. Enséñame a reconocer tus detalles: una palabra amable, la mesa servida, un rato de silencio.",
+    "Que mi gratitud no se quede en palabras. Dame un corazón paciente, generoso y atento con quienes me rodean. Amén."
+  ],
+  "closing": "¿Por qué quieres dar gracias hoy? Guárdalo en tu corazón durante el día.",
+  "tiktok_description": "Una breve oración de gratitud para empezar el día. 🙏 Guárdala para las mañanas en que necesites recordarlo.",
+  "hashtags": [
+    "#oracion",
+    "#oraciondiaria",
+    "#gratitud",
+    "#oraciondelamañana",
+    "#fe",
+    "#Dios",
+    "#cristianos"
+  ],
+  "review": {
+    "status": "pending"
+  },
+  "generator": "claude-code (curated sample)"
+}

@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-03",
+  "language": "es",
+  "theme": "inner_peace",
+  "title": "Calma mi corazón",
+  "hook": "Si tu mente no ha descansado en todo el día, regálate este momento de calma.",
+  "bible_verse": {
+    "reference": "Juan 14:27",
+    "translation": "RV1909",
+    "text": "La paz os dejo, mi paz os doy: no como el mundo la da, yo os la doy. No se turbe vuestro corazón, ni tenga miedo.",
+    "spoken_intro": "Jesús dijo:",
+    "verification": {
+      "status": "pending",
+      "verified_by": null,
+      "source": null,
+      "note": "Versículo citado de memoria (Reina-Valera 1909, dominio público). Cotéjalo con una edición fiable de la RV1909 antes de marcarlo como 'verified'."
+    }
+  },
+  "prayer": [
+    "Señor, hoy mis pensamientos no me dejan en paz. Te entrego las preocupaciones a las que doy vueltas una y otra vez, y las conversaciones que repito en mi cabeza.",
+    "Calma lo que hace ruido dentro de mí. Donde hay ansiedad, siembra tu paz. Donde hay prisa, enséñame a descansar en ti.",
+    "No puedo controlarlo todo, y nunca fue esa mi tarea. Por eso pongo este día, con todo lo que quedó pendiente, en tus manos. Amén."
+  ],
+  "closing": "Quédate aquí un instante más. Respira despacio y deja que su paz te envuelva.",
+  "tiktok_description": "Una oración breve para una mente inquieta. Suelta tus preocupaciones por un momento. 🕊️",
+  "hashtags": [
+    "#oracion",
+    "#oraciondiaria",
+    "#paz",
+    "#ansiedad",
+    "#fe",
+    "#Dios",
+    "#cristianos"
+  ],
+  "review": {
+    "status": "pending"
+  },
+  "generator": "claude-code (curated sample)"
+}

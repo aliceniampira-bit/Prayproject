@@ -1,0 +1,103 @@
+{
+  "project": {
+    "account_name": "Daily Prayer Studio",
+    "handle": "@dailyprayerstudio"
+  },
+  "languages": {
+    "en": {
+      "output_folder": "english",
+      "closing_tagline": "A new prayer every day",
+      "words_per_minute": 130
+    },
+    "es": {
+      "output_folder": "spanish",
+      "closing_tagline": "Una oración nueva cada día",
+      "words_per_minute": 135
+    }
+  },
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "min_duration_seconds": 60,
+    "max_duration_seconds": 90,
+    "lead_in_seconds": 1.5,
+    "outro_seconds": 4.0,
+    "crossfade_seconds": 1.2,
+    "clips_per_video": 4,
+    "title_card_seconds": 4.5,
+    "crf": 20,
+    "preset": "medium",
+    "audio_bitrate": "192k"
+  },
+  "voice": {
+    "provider": "espeak_local",
+    "selected_gender": {
+      "en": "female",
+      "es": "female"
+    },
+    "voices": {
+      "espeak_local": {
+        "en": {
+          "female": "en-us+f3",
+          "male": "en-us+m3"
+        },
+        "es": {
+          "female": "es-419+f3",
+          "male": "es-419+m3"
+        },
+        "speed_wpm": 125,
+        "pitch": 45
+      }
+    },
+    "sample_rate": 48000,
+    "pause_between_sentences_seconds": 0.55,
+    "pause_between_sections_seconds": 1.1,
+    "min_segment_seconds": 0.3
+  },
+  "audio": {
+    "voice_stem_lufs": -16.0,
+    "music_below_voice_db": 20.0,
+    "target_lufs": -14.0,
+    "true_peak_db": -1.5,
+    "music_fade_in_seconds": 2.5,
+    "music_fade_out_seconds": 3.5,
+    "ducking": true,
+    "min_voice_over_music_db": 12.0
+  },
+  "subtitles": {
+    "max_lines": 2,
+    "max_words_per_cue": 9,
+    "max_chars_per_second": 18,
+    "min_cue_seconds": 0.9,
+    "width_safety_factor": 0.92
+  },
+  "script": {
+    "similarity_threshold": 0.35,
+    "history_dirs": [
+      "data/scripts"
+    ],
+    "default_bible_translation": {
+      "en": "KJV",
+      "es": "RV1909"
+    }
+  },
+  "music": {
+    "library_file": "assets/music/music_library.json",
+    "allow_unverified_for_preview": true
+  },
+  "quality": {
+    "min_mean_volume_db": -40.0,
+    "max_true_peak_db": -1.0,
+    "loudness_tolerance_lu": 2.5
+  },
+  "paths": {
+    "output_dir": "output",
+    "errors_dir": "output/errors",
+    "work_dir": "output/_work",
+    "logs_dir": "logs",
+    "media_registry": "data/media_registry.json",
+    "fonts_dir": "assets/fonts",
+    "branding_dir": "assets/branding"
+  }
+}

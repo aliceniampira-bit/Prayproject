@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-01",
+  "language": "en",
+  "theme": "gratitude",
+  "title": "A Morning Thank You",
+  "hook": "Before the day gets loud, take one breath and give thanks.",
+  "bible_verse": {
+    "reference": "Psalm 118:24",
+    "translation": "KJV",
+    "text": "This is the day which the LORD hath made; we will rejoice and be glad in it.",
+    "spoken_intro": "The psalmist wrote:",
+    "verification": {
+      "status": "pending",
+      "verified_by": null,
+      "source": null,
+      "note": "Verse quoted from memory (KJV, public domain in the US). Check it against a reliable KJV edition before setting status to 'verified'."
+    }
+  },
+  "prayer": [
+    "Lord, thank you for this new morning: for the breath in my lungs, the light through the window, and the people you have placed in my life.",
+    "Forgive me for the days I rushed past your gifts and noticed only what was missing. Open my eyes to the small mercies: a kind word, a warm meal, a moment of quiet.",
+    "Let my gratitude become something I do, not just something I feel. Make me patient, generous, and present today. Amen."
+  ],
+  "closing": "What is one thing you are thankful for today? Carry it with you.",
+  "tiktok_description": "A short prayer of gratitude to start your day. 🙏 Save it for the mornings you need the reminder.",
+  "hashtags": [
+    "#prayer",
+    "#dailyprayer",
+    "#gratitude",
+    "#morningprayer",
+    "#faith",
+    "#christian",
+    "#jesus"
+  ],
+  "review": {
+    "status": "pending"
+  },
+  "generator": "claude-code (curated sample)"
+}
